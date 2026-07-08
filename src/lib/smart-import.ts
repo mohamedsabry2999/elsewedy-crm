@@ -61,16 +61,16 @@ const SECTOR_MAP: Record<string, string> = {
 };
 
 export const LEAD_FIELDS: FieldDef[] = [
-  { key: "contact_name", label: "اسم جهة الاتصال", aliases: NAME_ALIASES, required: true },
-  { key: "company_name", label: "اسم الشركة", aliases: COMPANY_ALIASES },
+  { key: "company_name", label: "اسم الشركة", aliases: COMPANY_ALIASES, required: true },
+  { key: "contact_person", label: "الشخص المسؤول", aliases: NAME_ALIASES },
   { key: "phone", label: "الهاتف", aliases: PHONE_ALIASES, type: "phone" },
   { key: "whatsapp", label: "واتساب", aliases: ["whatsapp", "واتساب", "رقم الواتساب"], type: "phone" },
   { key: "email", label: "البريد الإلكتروني", aliases: EMAIL_ALIASES, type: "email" },
   { key: "source", label: "المصدر", aliases: SOURCE_ALIASES, type: "enum", enumValues: LEAD_SOURCE_MAP },
-  { key: "service_interested", label: "الخدمة", aliases: SERVICE_ALIASES, type: "enum", enumValues: SERVICE_MAP },
+  { key: "service", label: "الخدمة", aliases: SERVICE_ALIASES, type: "enum", enumValues: SERVICE_MAP },
   { key: "sector", label: "القطاع", aliases: SECTOR_ALIASES, type: "enum", enumValues: SECTOR_MAP },
   { key: "city", label: "المدينة", aliases: CITY_ALIASES },
-  { key: "job_title", label: "المسمى الوظيفي", aliases: TITLE_ALIASES },
+  { key: "country", label: "الدولة", aliases: ["country", "الدولة", "البلد"] },
   { key: "notes", label: "ملاحظات", aliases: NOTES_ALIASES },
   { key: "first_contact_date", label: "تاريخ التواصل", aliases: DATE_ALIASES, type: "date" },
 ];
@@ -83,8 +83,7 @@ export const CLIENT_FIELDS: FieldDef[] = [
   { key: "email", label: "البريد", aliases: EMAIL_ALIASES, type: "email" },
   { key: "sector", label: "القطاع", aliases: SECTOR_ALIASES, type: "enum", enumValues: SECTOR_MAP },
   { key: "city", label: "المدينة", aliases: CITY_ALIASES },
-  { key: "address", label: "العنوان", aliases: ["address", "العنوان", "عنوان"] },
-  { key: "tax_number", label: "الرقم الضريبي", aliases: ["tax", "tax number", "vat", "الرقم الضريبي", "ضريبي"] },
+  { key: "country", label: "الدولة", aliases: ["country", "الدولة", "البلد"] },
   { key: "notes", label: "ملاحظات", aliases: NOTES_ALIASES },
 ];
 

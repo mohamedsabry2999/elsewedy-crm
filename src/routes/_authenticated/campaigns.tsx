@@ -69,10 +69,11 @@ function CampaignsPage() {
       />
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <StatCard title="إجمالي الميزانية" value={formatEGP(totals.budget)} icon={Megaphone} />
-        <StatCard title="المصروف الفعلي" value={formatEGP(totals.spent)} icon={Megaphone} />
-        <StatCard title="تكلفة العميل المحتمل" value={formatEGP(cpl)} icon={TrendingUp} />
-        <StatCard title="عائد الاستثمار" value={`${roi.toFixed(0)}%`} icon={TrendingUp} trend={roi >= 0 ? "up" : "down"} />
+        <StatCard label="إجمالي الميزانية" value={formatEGP(totals.budget)} icon={Megaphone} />
+        <StatCard label="المصروف الفعلي" value={formatEGP(totals.spent)} icon={Megaphone} />
+        <StatCard label="تكلفة العميل المحتمل" value={formatEGP(cpl)} icon={TrendingUp} />
+        <StatCard label="عائد الاستثمار" value={`${roi.toFixed(0)}%`} icon={TrendingUp} trend={roi >= 0 ? "up" : "down"} />
+
       </div>
 
       <Card className="shadow-card overflow-hidden">

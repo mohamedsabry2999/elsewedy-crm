@@ -16,6 +16,7 @@ import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedQuotationsRouteImport } from './routes/_authenticated/quotations'
 import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated/production'
+import { Route as AuthenticatedPortalLinksRouteImport } from './routes/_authenticated/portal-links'
 import { Route as AuthenticatedPipelineRouteImport } from './routes/_authenticated/pipeline'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
@@ -59,6 +60,12 @@ const AuthenticatedProductionRoute = AuthenticatedProductionRouteImport.update({
   path: '/production',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPortalLinksRoute =
+  AuthenticatedPortalLinksRouteImport.update({
+    id: '/portal-links',
+    path: '/portal-links',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPipelineRoute = AuthenticatedPipelineRouteImport.update({
   id: '/pipeline',
   path: '/pipeline',
@@ -111,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/leads': typeof AuthenticatedLeadsRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/pipeline': typeof AuthenticatedPipelineRoute
+  '/portal-links': typeof AuthenticatedPortalLinksRoute
   '/production': typeof AuthenticatedProductionRoute
   '/quotations': typeof AuthenticatedQuotationsRoute
   '/reports': typeof AuthenticatedReportsRoute
@@ -126,6 +134,7 @@ export interface FileRoutesByTo {
   '/leads': typeof AuthenticatedLeadsRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/pipeline': typeof AuthenticatedPipelineRoute
+  '/portal-links': typeof AuthenticatedPortalLinksRoute
   '/production': typeof AuthenticatedProductionRoute
   '/quotations': typeof AuthenticatedQuotationsRoute
   '/reports': typeof AuthenticatedReportsRoute
@@ -144,6 +153,7 @@ export interface FileRoutesById {
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/pipeline': typeof AuthenticatedPipelineRoute
+  '/_authenticated/portal-links': typeof AuthenticatedPortalLinksRoute
   '/_authenticated/production': typeof AuthenticatedProductionRoute
   '/_authenticated/quotations': typeof AuthenticatedQuotationsRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
@@ -163,6 +173,7 @@ export interface FileRouteTypes {
     | '/leads'
     | '/orders'
     | '/pipeline'
+    | '/portal-links'
     | '/production'
     | '/quotations'
     | '/reports'
@@ -178,6 +189,7 @@ export interface FileRouteTypes {
     | '/leads'
     | '/orders'
     | '/pipeline'
+    | '/portal-links'
     | '/production'
     | '/quotations'
     | '/reports'
@@ -195,6 +207,7 @@ export interface FileRouteTypes {
     | '/_authenticated/leads'
     | '/_authenticated/orders'
     | '/_authenticated/pipeline'
+    | '/_authenticated/portal-links'
     | '/_authenticated/production'
     | '/_authenticated/quotations'
     | '/_authenticated/reports'
@@ -256,6 +269,13 @@ declare module '@tanstack/react-router' {
       path: '/production'
       fullPath: '/production'
       preLoaderRoute: typeof AuthenticatedProductionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal-links': {
+      id: '/_authenticated/portal-links'
+      path: '/portal-links'
+      fullPath: '/portal-links'
+      preLoaderRoute: typeof AuthenticatedPortalLinksRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/pipeline': {
@@ -326,6 +346,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
   AuthenticatedPipelineRoute: typeof AuthenticatedPipelineRoute
+  AuthenticatedPortalLinksRoute: typeof AuthenticatedPortalLinksRoute
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRoute
   AuthenticatedQuotationsRoute: typeof AuthenticatedQuotationsRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
@@ -342,6 +363,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
   AuthenticatedPipelineRoute: AuthenticatedPipelineRoute,
+  AuthenticatedPortalLinksRoute: AuthenticatedPortalLinksRoute,
   AuthenticatedProductionRoute: AuthenticatedProductionRoute,
   AuthenticatedQuotationsRoute: AuthenticatedQuotationsRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,

@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, FileText, Printer } from "lucide-react";
+import { Plus, FileText, Printer, Pencil } from "lucide-react";
 import { printQuotationPDF } from "@/lib/quotation-pdf";
+
 
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/crm/PageHeader";

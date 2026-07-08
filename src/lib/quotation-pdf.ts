@@ -3,6 +3,15 @@
 
 import { formatEGP, formatDate, labelOf, SERVICES, QUOTATION_STATUSES } from "./crm-constants";
 
+type QuoteItem = {
+  description: string;
+  unit?: string | null;
+  quantity: number;
+  unit_price: number;
+  discount_pct?: number;
+  total: number;
+};
+
 type Quote = {
   id: string;
   quote_number?: string | null;
@@ -23,8 +32,10 @@ type Quote = {
   validity_days?: number | null;
   status?: string | null;
   created_at?: string | null;
+  items?: QuoteItem[];
   clients?: { company_name?: string | null; contact_person?: string | null; phone?: string | null; email?: string | null } | null;
 };
+
 
 export function printQuotationPDF(q: Quote) {
   const subtotal = Number(q.total_price ?? 0);

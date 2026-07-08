@@ -60,7 +60,8 @@ function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen grid lg:grid-cols-2 bg-background" dir="rtl">
+    <div className="min-h-screen grid lg:grid-cols-2 bg-background" dir="rtl" suppressHydrationWarning>
+
       {/* Brand side */}
       <div className="hidden lg:flex flex-col justify-between p-10 gradient-brand text-primary-foreground relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_20%_20%,white_1px,transparent_1px)] [background-size:24px_24px]" />
@@ -83,7 +84,7 @@ function AuthPage() {
             <li>• تقارير تنفيذية شاملة</li>
           </ul>
         </div>
-        <p className="relative text-xs text-white/70">© {new Date().getFullYear()} Medhat Elsewedy Print House</p>
+        <p className="relative text-xs text-white/70" suppressHydrationWarning>© {new Date().getFullYear()} Medhat Elsewedy Print House</p>
       </div>
 
       {/* Auth side */}

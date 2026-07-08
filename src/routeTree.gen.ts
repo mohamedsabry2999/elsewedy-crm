@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as PortalTokenRouteImport } from './routes/portal.$token'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedQuotationsRouteImport } from './routes/_authenticated/quotations'
@@ -39,6 +40,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const PortalTokenRoute = PortalTokenRouteImport.update({
+  id: '/portal/$token',
+  path: '/portal/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   id: '/tasks',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/quotations': typeof AuthenticatedQuotationsRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/portal/$token': typeof PortalTokenRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/quotations': typeof AuthenticatedQuotationsRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/portal/$token': typeof PortalTokenRoute
   '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/_authenticated/quotations': typeof AuthenticatedQuotationsRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
+  '/portal/$token': typeof PortalTokenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
@@ -178,6 +187,7 @@ export interface FileRouteTypes {
     | '/quotations'
     | '/reports'
     | '/tasks'
+    | '/portal/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/quotations'
     | '/reports'
     | '/tasks'
+    | '/portal/$token'
     | '/'
   id:
     | '__root__'
@@ -212,12 +223,14 @@ export interface FileRouteTypes {
     | '/_authenticated/quotations'
     | '/_authenticated/reports'
     | '/_authenticated/tasks'
+    | '/portal/$token'
     | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  PortalTokenRoute: typeof PortalTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -242,6 +255,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/portal/$token': {
+      id: '/portal/$token'
+      path: '/portal/$token'
+      fullPath: '/portal/$token'
+      preLoaderRoute: typeof PortalTokenRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/tasks': {
       id: '/_authenticated/tasks'
@@ -377,6 +397,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  PortalTokenRoute: PortalTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

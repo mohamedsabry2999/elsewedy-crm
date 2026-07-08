@@ -153,27 +153,37 @@ function SidebarInner() {
           <p className="text-[10px] text-sidebar-foreground/60">Growth Platform</p>
         </div>
       </div>
-      <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-        {NAV.map((item) => {
-          const active = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                active
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-elegant"
-                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-              )}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto p-3 space-y-4">
+        {Array.from(new Set(NAV.map((n) => n.group ?? ""))).map((group) => (
+          <div key={group} className="space-y-1">
+            {group && (
+              <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
+                {group}
+              </p>
+            )}
+            {NAV.filter((n) => (n.group ?? "") === group).map((item) => {
+              const active = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-elegant"
+                      : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  )}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
+
       <div className="p-4 border-t border-sidebar-border text-[11px] text-sidebar-foreground/50">
         الإصدار 1.0 — المرحلة الأولى
       </div>

@@ -443,6 +443,57 @@ export type Database = {
           },
         ]
       }
+      import_logs: {
+        Row: {
+          created_at: string
+          created_ids: Json
+          error_count: number
+          errors: Json
+          file_name: string
+          id: string
+          inserted_count: number
+          mapping: Json
+          skipped_count: number
+          status: string
+          target_module: string
+          total_rows: number
+          updated_count: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_ids?: Json
+          error_count?: number
+          errors?: Json
+          file_name: string
+          id?: string
+          inserted_count?: number
+          mapping?: Json
+          skipped_count?: number
+          status?: string
+          target_module: string
+          total_rows?: number
+          updated_count?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_ids?: Json
+          error_count?: number
+          errors?: Json
+          file_name?: string
+          id?: string
+          inserted_count?: number
+          mapping?: Json
+          skipped_count?: number
+          status?: string
+          target_module?: string
+          total_rows?: number
+          updated_count?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           assigned_to: string | null

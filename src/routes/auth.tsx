@@ -84,7 +84,7 @@ function AuthPage() {
             <li>• تقارير تنفيذية شاملة</li>
           </ul>
         </div>
-        <p className="relative text-xs text-white/70" suppressHydrationWarning>© {new Date().getFullYear()} Medhat Elsewedy Print House</p>
+        <p className="relative text-xs text-white/70">© Medhat Elsewedy Print House</p>
       </div>
 
       {/* Auth side */}

@@ -19,6 +19,7 @@ import {
   Bot,
   Zap,
   ExternalLink,
+  Upload,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -55,6 +56,7 @@ const NAV: NavItem[] = [
   { to: "/assistant", label: "المساعد الذكي", icon: Bot, group: "الذكاء" },
   { to: "/reports", label: "التقارير", icon: BarChart3, group: "التحليلات" },
   { to: "/portal-links", label: "بوابة العميل", icon: ExternalLink, group: "التحليلات" },
+  { to: "/import", label: "استيراد Excel", icon: Upload, group: "الإدارة" },
 ];
 
 

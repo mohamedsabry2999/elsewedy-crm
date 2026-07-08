@@ -58,6 +58,7 @@ const NAV: NavItem[] = [
   { to: "/reports", label: "التقارير", icon: BarChart3, group: "التحليلات" },
   { to: "/portal-links", label: "بوابة العميل", icon: ExternalLink, group: "التحليلات" },
   { to: "/import", label: "استيراد Excel", icon: Upload, group: "الإدارة" },
+  { to: "/data-quality", label: "جودة البيانات", icon: ShieldCheck, group: "الإدارة" },
 ];
 
 

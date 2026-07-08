@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RequestRouteImport } from './routes/request'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
@@ -28,8 +29,14 @@ import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCampaignsRouteImport } from './routes/_authenticated/campaigns'
 import { Route as AuthenticatedAutomationRouteImport } from './routes/_authenticated/automation'
 import { Route as AuthenticatedAssistantRouteImport } from './routes/_authenticated/assistant'
+import { Route as ApiPublicLeadRequestRouteImport } from './routes/api/public/lead-request'
 import { Route as AuthenticatedQuotationsIdRouteImport } from './routes/_authenticated/quotations.$id'
 
+const RequestRoute = RequestRouteImport.update({
+  id: '/request',
+  path: '/request',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -126,6 +133,11 @@ const AuthenticatedAssistantRoute = AuthenticatedAssistantRouteImport.update({
   path: '/assistant',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicLeadRequestRoute = ApiPublicLeadRequestRouteImport.update({
+  id: '/api/public/lead-request',
+  path: '/api/public/lead-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedQuotationsIdRoute =
   AuthenticatedQuotationsIdRouteImport.update({
     id: '/$id',
@@ -136,6 +148,7 @@ const AuthenticatedQuotationsIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/request': typeof RequestRoute
   '/assistant': typeof AuthenticatedAssistantRoute
   '/automation': typeof AuthenticatedAutomationRoute
   '/campaigns': typeof AuthenticatedCampaignsRoute
@@ -153,9 +166,11 @@ export interface FileRoutesByFullPath {
   '/tasks': typeof AuthenticatedTasksRoute
   '/portal/$token': typeof PortalTokenRoute
   '/quotations/$id': typeof AuthenticatedQuotationsIdRoute
+  '/api/public/lead-request': typeof ApiPublicLeadRequestRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/request': typeof RequestRoute
   '/assistant': typeof AuthenticatedAssistantRoute
   '/automation': typeof AuthenticatedAutomationRoute
   '/campaigns': typeof AuthenticatedCampaignsRoute
@@ -174,11 +189,13 @@ export interface FileRoutesByTo {
   '/portal/$token': typeof PortalTokenRoute
   '/': typeof AuthenticatedIndexRoute
   '/quotations/$id': typeof AuthenticatedQuotationsIdRoute
+  '/api/public/lead-request': typeof ApiPublicLeadRequestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/request': typeof RequestRoute
   '/_authenticated/assistant': typeof AuthenticatedAssistantRoute
   '/_authenticated/automation': typeof AuthenticatedAutomationRoute
   '/_authenticated/campaigns': typeof AuthenticatedCampaignsRoute
@@ -197,12 +214,14 @@ export interface FileRoutesById {
   '/portal/$token': typeof PortalTokenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/quotations/$id': typeof AuthenticatedQuotationsIdRoute
+  '/api/public/lead-request': typeof ApiPublicLeadRequestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
+    | '/request'
     | '/assistant'
     | '/automation'
     | '/campaigns'
@@ -220,9 +239,11 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/portal/$token'
     | '/quotations/$id'
+    | '/api/public/lead-request'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/request'
     | '/assistant'
     | '/automation'
     | '/campaigns'
@@ -241,10 +262,12 @@ export interface FileRouteTypes {
     | '/portal/$token'
     | '/'
     | '/quotations/$id'
+    | '/api/public/lead-request'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/request'
     | '/_authenticated/assistant'
     | '/_authenticated/automation'
     | '/_authenticated/campaigns'
@@ -263,16 +286,26 @@ export interface FileRouteTypes {
     | '/portal/$token'
     | '/_authenticated/'
     | '/_authenticated/quotations/$id'
+    | '/api/public/lead-request'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  RequestRoute: typeof RequestRoute
   PortalTokenRoute: typeof PortalTokenRoute
+  ApiPublicLeadRequestRoute: typeof ApiPublicLeadRequestRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/request': {
+      id: '/request'
+      path: '/request'
+      fullPath: '/request'
+      preLoaderRoute: typeof RequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -406,6 +439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssistantRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/lead-request': {
+      id: '/api/public/lead-request'
+      path: '/api/public/lead-request'
+      fullPath: '/api/public/lead-request'
+      preLoaderRoute: typeof ApiPublicLeadRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/quotations/$id': {
       id: '/_authenticated/quotations/$id'
       path: '/$id'
@@ -474,7 +514,9 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  RequestRoute: RequestRoute,
   PortalTokenRoute: PortalTokenRoute,
+  ApiPublicLeadRequestRoute: ApiPublicLeadRequestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -34,6 +34,8 @@ function PortalLinksPage() {
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
 
+  const publicRequestUrl = `${origin}/request`;
+
   return (
     <div>
       <PageHeader
@@ -46,6 +48,31 @@ function PortalLinksPage() {
           </Dialog>
         }
       />
+
+      <Card className="shadow-card p-4 mb-6 border-primary/30 bg-primary/5">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+          <div>
+            <p className="text-sm font-semibold text-foreground">رابط الطلبات العام</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              شاركه على موقعك ووسائل التواصل — كل طلب يصلك مباشرة في وحدة العملاء المحتملين.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <code className="text-[11px] font-mono bg-background px-2 py-1.5 rounded border max-w-[260px] truncate" dir="ltr">
+              {publicRequestUrl}
+            </code>
+            <Button size="sm" variant="outline" className="gap-1.5" onClick={() => { navigator.clipboard.writeText(publicRequestUrl); toast.success("تم النسخ"); }}>
+              <Copy className="h-3.5 w-3.5" /> نسخ
+            </Button>
+            <Button size="sm" variant="default" className="gap-1.5" asChild>
+              <a href={publicRequestUrl} target="_blank" rel="noreferrer">
+                <ExternalLink className="h-3.5 w-3.5" /> فتح
+              </a>
+            </Button>
+          </div>
+        </div>
+      </Card>
+
 
       <Card className="shadow-card overflow-hidden">
         <Table>

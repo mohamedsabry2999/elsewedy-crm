@@ -85,13 +85,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content:
           "نظام Elsewedy Growth CRM لإدارة دورة حياة العميل الكاملة — من العملاء المحتملين حتى الإنتاج والتسليم لدار مدحت السويدي للطباعة.",
       },
-      { property: "og:title", content: "Elsewedy Growth CRM" },
+      { property: "og:title", content: "Elsewedy Growth CRM — نظام إدارة العملاء" },
       {
         property: "og:description",
-        content: "منصة تشغيل تجارية متكاملة لدار مدحت السويدي للطباعة والتغليف.",
+        content: "نظام Elsewedy Growth CRM لإدارة دورة حياة العميل الكاملة — من العملاء المحتملين حتى الإنتاج والتسليم لدار مدحت السويدي للطباعة.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Elsewedy Growth CRM — نظام إدارة العملاء" },
+      { name: "twitter:description", content: "نظام Elsewedy Growth CRM لإدارة دورة حياة العميل الكاملة — من العملاء المحتملين حتى الإنتاج والتسليم لدار مدحت السويدي للطباعة." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/45db0cde-6707-42fe-9357-75347df765a5/id-preview-69dfc39e--9c9ca73c-43be-44dc-8066-798b1186741e.lovable.app-1783509921496.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/45db0cde-6707-42fe-9357-75347df765a5/id-preview-69dfc39e--9c9ca73c-43be-44dc-8066-798b1186741e.lovable.app-1783509921496.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },

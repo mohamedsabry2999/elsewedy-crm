@@ -20,6 +20,7 @@ import {
   Zap,
   ExternalLink,
   Upload,
+  ShieldCheck,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import logoAsset from "@/assets/elsewedy-logo.png.asset.json";
 import { useQueryClient } from "@tanstack/react-query";
+import { GlobalSearch } from "./GlobalSearch";
 
 type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; group?: string };
 
@@ -57,6 +59,7 @@ const NAV: NavItem[] = [
   { to: "/reports", label: "التقارير", icon: BarChart3, group: "التحليلات" },
   { to: "/portal-links", label: "بوابة العميل", icon: ExternalLink, group: "التحليلات" },
   { to: "/import", label: "استيراد Excel", icon: Upload, group: "الإدارة" },
+  { to: "/data-quality", label: "جودة البيانات", icon: ShieldCheck, group: "الإدارة" },
 ];
 
 
@@ -102,10 +105,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             </SheetContent>
           </Sheet>
 
-          <div className="relative flex-1 max-w-md">
-            <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="بحث سريع عن عميل، عرض سعر، أو مهمة..." className="pr-9 bg-muted/50 border-transparent focus-visible:bg-background" />
-          </div>
+          <GlobalSearch />
 
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="h-5 w-5" />

@@ -255,6 +255,7 @@ export type Database = {
           notes: string | null
           phone: string | null
           sector: string | null
+          tags: string[]
           total_revenue: number
           updated_at: string
           whatsapp: string | null
@@ -274,6 +275,7 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           sector?: string | null
+          tags?: string[]
           total_revenue?: number
           updated_at?: string
           whatsapp?: string | null
@@ -293,6 +295,7 @@ export type Database = {
           notes?: string | null
           phone?: string | null
           sector?: string | null
+          tags?: string[]
           total_revenue?: number
           updated_at?: string
           whatsapp?: string | null
@@ -515,6 +518,7 @@ export type Database = {
           service: string | null
           source: string
           status: Database["public"]["Enums"]["lead_status"]
+          tags: string[]
           temperature: Database["public"]["Enums"]["lead_temperature"]
           updated_at: string
           whatsapp: string | null
@@ -539,6 +543,7 @@ export type Database = {
           service?: string | null
           source: string
           status?: Database["public"]["Enums"]["lead_status"]
+          tags?: string[]
           temperature?: Database["public"]["Enums"]["lead_temperature"]
           updated_at?: string
           whatsapp?: string | null
@@ -563,6 +568,7 @@ export type Database = {
           service?: string | null
           source?: string
           status?: Database["public"]["Enums"]["lead_status"]
+          tags?: string[]
           temperature?: Database["public"]["Enums"]["lead_temperature"]
           updated_at?: string
           whatsapp?: string | null

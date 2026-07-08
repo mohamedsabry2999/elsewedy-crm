@@ -40,6 +40,8 @@ import { toast } from "sonner";
 import logoAsset from "@/assets/elsewedy-logo.png.asset.json";
 import { useQueryClient } from "@tanstack/react-query";
 import { GlobalSearch } from "./GlobalSearch";
+import { NotificationsBell } from "./NotificationsBell";
+
 
 type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; group?: string };
 
@@ -107,10 +109,8 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           <GlobalSearch />
 
-          <Button variant="ghost" size="icon" className="relative">
-            <Bell className="h-5 w-5" />
-            <span className="absolute top-2 left-2 h-2 w-2 rounded-full bg-destructive" />
-          </Button>
+          <NotificationsBell />
+
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

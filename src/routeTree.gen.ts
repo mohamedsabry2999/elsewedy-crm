@@ -21,6 +21,7 @@ import { Route as AuthenticatedPortalLinksRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPipelineRouteImport } from './routes/_authenticated/pipeline'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
+import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedCampaignsRouteImport } from './routes/_authenticated/campaigns'
@@ -87,6 +88,11 @@ const AuthenticatedLeadsRoute = AuthenticatedLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedComplaintsRoute = AuthenticatedComplaintsRouteImport.update({
   id: '/complaints',
   path: '/complaints',
@@ -121,6 +127,7 @@ export interface FileRoutesByFullPath {
   '/campaigns': typeof AuthenticatedCampaignsRoute
   '/clients': typeof AuthenticatedClientsRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
+  '/import': typeof AuthenticatedImportRoute
   '/leads': typeof AuthenticatedLeadsRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/pipeline': typeof AuthenticatedPipelineRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/campaigns': typeof AuthenticatedCampaignsRoute
   '/clients': typeof AuthenticatedClientsRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
+  '/import': typeof AuthenticatedImportRoute
   '/leads': typeof AuthenticatedLeadsRoute
   '/orders': typeof AuthenticatedOrdersRoute
   '/pipeline': typeof AuthenticatedPipelineRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/_authenticated/campaigns': typeof AuthenticatedCampaignsRoute
   '/_authenticated/clients': typeof AuthenticatedClientsRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRoute
+  '/_authenticated/import': typeof AuthenticatedImportRoute
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/pipeline': typeof AuthenticatedPipelineRoute
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/campaigns'
     | '/clients'
     | '/complaints'
+    | '/import'
     | '/leads'
     | '/orders'
     | '/pipeline'
@@ -196,6 +206,7 @@ export interface FileRouteTypes {
     | '/campaigns'
     | '/clients'
     | '/complaints'
+    | '/import'
     | '/leads'
     | '/orders'
     | '/pipeline'
@@ -215,6 +226,7 @@ export interface FileRouteTypes {
     | '/_authenticated/campaigns'
     | '/_authenticated/clients'
     | '/_authenticated/complaints'
+    | '/_authenticated/import'
     | '/_authenticated/leads'
     | '/_authenticated/orders'
     | '/_authenticated/pipeline'
@@ -319,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLeadsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/import': {
+      id: '/_authenticated/import'
+      path: '/import'
+      fullPath: '/import'
+      preLoaderRoute: typeof AuthenticatedImportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/complaints': {
       id: '/_authenticated/complaints'
       path: '/complaints'
@@ -363,6 +382,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCampaignsRoute: typeof AuthenticatedCampaignsRoute
   AuthenticatedClientsRoute: typeof AuthenticatedClientsRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRoute
+  AuthenticatedImportRoute: typeof AuthenticatedImportRoute
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
   AuthenticatedPipelineRoute: typeof AuthenticatedPipelineRoute
@@ -380,6 +400,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCampaignsRoute: AuthenticatedCampaignsRoute,
   AuthenticatedClientsRoute: AuthenticatedClientsRoute,
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRoute,
+  AuthenticatedImportRoute: AuthenticatedImportRoute,
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
   AuthenticatedPipelineRoute: AuthenticatedPipelineRoute,

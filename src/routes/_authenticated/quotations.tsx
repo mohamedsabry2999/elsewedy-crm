@@ -1,8 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, FileText, Printer } from "lucide-react";
+import { Plus, FileText, Printer, Pencil } from "lucide-react";
 import { printQuotationPDF } from "@/lib/quotation-pdf";
+
 
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/crm/PageHeader";
@@ -95,10 +96,18 @@ function QuotationsPage() {
                 <TableCell>{formatDate(q.delivery_date)}</TableCell>
                 <TableCell><Badge variant="secondary">{labelOf(QUOTATION_STATUSES, q.status)}</Badge></TableCell>
                 <TableCell>
-                  <Button size="sm" variant="outline" className="gap-1" onClick={() => printQuotationPDF(q)}>
-                    <Printer className="h-3.5 w-3.5" /> PDF
-                  </Button>
+                  <div className="flex gap-1">
+                    <Button asChild size="sm" variant="outline" className="gap-1">
+                      <Link to="/quotations/$id" params={{ id: q.id }}>
+                        <Pencil className="h-3.5 w-3.5" /> فتح
+                      </Link>
+                    </Button>
+                    <Button size="sm" variant="outline" className="gap-1" onClick={() => printQuotationPDF(q)}>
+                      <Printer className="h-3.5 w-3.5" /> PDF
+                    </Button>
+                  </div>
                 </TableCell>
+
               </TableRow>
             ))}
 

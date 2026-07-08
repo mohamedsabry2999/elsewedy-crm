@@ -3,6 +3,15 @@
 
 import { formatEGP, formatDate, labelOf, SERVICES, QUOTATION_STATUSES } from "./crm-constants";
 
+type QuoteItem = {
+  description: string;
+  unit?: string | null;
+  quantity: number;
+  unit_price: number;
+  discount_pct?: number;
+  total: number;
+};
+
 type Quote = {
   id: string;
   quote_number?: string | null;
@@ -23,14 +32,18 @@ type Quote = {
   validity_days?: number | null;
   status?: string | null;
   created_at?: string | null;
+  items?: QuoteItem[];
   clients?: { company_name?: string | null; contact_person?: string | null; phone?: string | null; email?: string | null } | null;
 };
 
+
 export function printQuotationPDF(q: Quote) {
-  const subtotal = Number(q.total_price ?? 0);
-  const vat = q.vat_amount != null ? Number(q.vat_amount) : subtotal * 0.14;
+  const itemsSubtotal = (q.items ?? []).reduce((s, it) => s + Number(it.total || 0), 0);
+  const subtotal = q.items && q.items.length > 0 ? itemsSubtotal : Number(q.total_price ?? 0);
   const discount = Number(q.discount ?? 0);
-  const final = q.final_price != null ? Number(q.final_price) : subtotal + vat - discount;
+  const vat = q.vat_amount != null ? Number(q.vat_amount) : (subtotal - discount) * 0.14;
+  const final = q.final_price != null && q.final_price !== 0 ? Number(q.final_price) : subtotal - discount + vat;
+
 
   const html = `<!doctype html>
 <html lang="ar" dir="rtl">
@@ -90,11 +103,24 @@ export function printQuotationPDF(q: Quote) {
   </div>
 
   <h2>تفاصيل العرض</h2>
-  <table>
+  ${q.items && q.items.length > 0 ? `<table>
     <thead>
-      <tr>
-        <th>البند</th><th>الخدمة</th><th>المقاس</th><th>الخامة</th><th>الألوان</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th>
-      </tr>
+      <tr><th>#</th><th>الوصف</th><th>الوحدة</th><th>الكمية</th><th>سعر الوحدة</th><th>خصم %</th><th>الإجمالي</th></tr>
+    </thead>
+    <tbody>
+      ${q.items.map((it, idx) => `<tr>
+        <td>${idx + 1}</td>
+        <td>${it.description ?? "—"}</td>
+        <td>${it.unit ?? "—"}</td>
+        <td>${it.quantity ?? "—"}</td>
+        <td>${formatEGP(it.unit_price)}</td>
+        <td>${it.discount_pct ?? 0}%</td>
+        <td>${formatEGP(it.total)}</td>
+      </tr>`).join("")}
+    </tbody>
+  </table>` : `<table>
+    <thead>
+      <tr><th>البند</th><th>الخدمة</th><th>المقاس</th><th>الخامة</th><th>الألوان</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr>
     </thead>
     <tbody>
       <tr>
@@ -108,7 +134,8 @@ export function printQuotationPDF(q: Quote) {
         <td>${formatEGP(subtotal)}</td>
       </tr>
     </tbody>
-  </table>
+  </table>`}
+
 
   ${q.technical_notes ? `<h2>ملاحظات فنية</h2><p style="font-size:13px;line-height:1.8;">${q.technical_notes}</p>` : ""}
 

@@ -101,11 +101,24 @@ export function printQuotationPDF(q: Quote) {
   </div>
 
   <h2>تفاصيل العرض</h2>
-  <table>
+  ${q.items && q.items.length > 0 ? `<table>
     <thead>
-      <tr>
-        <th>البند</th><th>الخدمة</th><th>المقاس</th><th>الخامة</th><th>الألوان</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th>
-      </tr>
+      <tr><th>#</th><th>الوصف</th><th>الوحدة</th><th>الكمية</th><th>سعر الوحدة</th><th>خصم %</th><th>الإجمالي</th></tr>
+    </thead>
+    <tbody>
+      ${q.items.map((it, idx) => `<tr>
+        <td>${idx + 1}</td>
+        <td>${it.description ?? "—"}</td>
+        <td>${it.unit ?? "—"}</td>
+        <td>${it.quantity ?? "—"}</td>
+        <td>${formatEGP(it.unit_price)}</td>
+        <td>${it.discount_pct ?? 0}%</td>
+        <td>${formatEGP(it.total)}</td>
+      </tr>`).join("")}
+    </tbody>
+  </table>` : `<table>
+    <thead>
+      <tr><th>البند</th><th>الخدمة</th><th>المقاس</th><th>الخامة</th><th>الألوان</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr>
     </thead>
     <tbody>
       <tr>
@@ -119,7 +132,8 @@ export function printQuotationPDF(q: Quote) {
         <td>${formatEGP(subtotal)}</td>
       </tr>
     </tbody>
-  </table>
+  </table>`}
+
 
   ${q.technical_notes ? `<h2>ملاحظات فنية</h2><p style="font-size:13px;line-height:1.8;">${q.technical_notes}</p>` : ""}
 

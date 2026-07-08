@@ -847,10 +847,13 @@ export type Database = {
           created_by: string | null
           deal_id: string | null
           delivery_date: string | null
+          discount: number
+          final_price: number
           finishing: string[] | null
           id: string
           material: string | null
           owner_id: string | null
+          payment_terms: string | null
           pricing_notes: string | null
           printing_type: string | null
           product_type: string | null
@@ -865,6 +868,8 @@ export type Database = {
           total_price: number | null
           unit_price: number | null
           updated_at: string
+          validity_days: number
+          vat_amount: number
         }
         Insert: {
           approved_at?: string | null
@@ -875,10 +880,13 @@ export type Database = {
           created_by?: string | null
           deal_id?: string | null
           delivery_date?: string | null
+          discount?: number
+          final_price?: number
           finishing?: string[] | null
           id?: string
           material?: string | null
           owner_id?: string | null
+          payment_terms?: string | null
           pricing_notes?: string | null
           printing_type?: string | null
           product_type?: string | null
@@ -893,6 +901,8 @@ export type Database = {
           total_price?: number | null
           unit_price?: number | null
           updated_at?: string
+          validity_days?: number
+          vat_amount?: number
         }
         Update: {
           approved_at?: string | null
@@ -903,10 +913,13 @@ export type Database = {
           created_by?: string | null
           deal_id?: string | null
           delivery_date?: string | null
+          discount?: number
+          final_price?: number
           finishing?: string[] | null
           id?: string
           material?: string | null
           owner_id?: string | null
+          payment_terms?: string | null
           pricing_notes?: string | null
           printing_type?: string | null
           product_type?: string | null
@@ -921,6 +934,8 @@ export type Database = {
           total_price?: number | null
           unit_price?: number | null
           updated_at?: string
+          validity_days?: number
+          vat_amount?: number
         }
         Relationships: [
           {

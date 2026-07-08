@@ -33,7 +33,7 @@ export function GlobalSearch() {
       (leads.data ?? []).forEach((l) => out.push({ kind: "lead", id: l.id, title: l.company_name, sub: l.contact_person || l.phone || l.email || "" }));
       (clients.data ?? []).forEach((c) => out.push({ kind: "client", id: c.id, title: c.company_name, sub: c.contact_person || c.phone || c.email || "" }));
       (quotes.data ?? []).forEach((qu) => out.push({ kind: "quote", id: qu.id, title: qu.quote_number ?? qu.id.slice(0, 8), sub: qu.clients?.company_name ?? "" }));
-      (orders.data ?? []).forEach((o) => out.push({ kind: "order", id: o.id, title: o.order_number, sub: o.title }));
+      (orders.data ?? []).forEach((o) => out.push({ kind: "order", id: o.id, title: o.order_number ?? o.id.slice(0, 8), sub: o.title ?? "" }));
       setResults(out);
       setOpen(true);
     })();

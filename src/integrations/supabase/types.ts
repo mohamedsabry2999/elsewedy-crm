@@ -72,6 +72,173 @@ export type Database = {
           },
         ]
       }
+      ai_conversations: {
+        Row: {
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_messages: {
+        Row: {
+          content: string
+          conversation_id: string
+          created_at: string
+          id: string
+          role: string
+        }
+        Insert: {
+          content: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          role: string
+        }
+        Update: {
+          content?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          role?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "ai_conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      automation_rules: {
+        Row: {
+          action_config: Json
+          action_type: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          last_run_at: string | null
+          name: string
+          run_count: number
+          status: Database["public"]["Enums"]["automation_status"]
+          trigger_config: Json
+          trigger_type: string
+          updated_at: string
+        }
+        Insert: {
+          action_config?: Json
+          action_type: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          last_run_at?: string | null
+          name: string
+          run_count?: number
+          status?: Database["public"]["Enums"]["automation_status"]
+          trigger_config?: Json
+          trigger_type: string
+          updated_at?: string
+        }
+        Update: {
+          action_config?: Json
+          action_type?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          last_run_at?: string | null
+          name?: string
+          run_count?: number
+          status?: Database["public"]["Enums"]["automation_status"]
+          trigger_config?: Json
+          trigger_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      campaigns: {
+        Row: {
+          budget: number
+          created_at: string
+          created_by: string | null
+          deals_closed: number
+          end_date: string | null
+          id: string
+          leads_generated: number
+          name: string
+          notes: string | null
+          owner_id: string | null
+          platform: Database["public"]["Enums"]["campaign_platform"]
+          revenue: number
+          spent: number
+          start_date: string | null
+          status: Database["public"]["Enums"]["campaign_status"]
+          target_sector: string | null
+          target_service: string | null
+          updated_at: string
+        }
+        Insert: {
+          budget?: number
+          created_at?: string
+          created_by?: string | null
+          deals_closed?: number
+          end_date?: string | null
+          id?: string
+          leads_generated?: number
+          name: string
+          notes?: string | null
+          owner_id?: string | null
+          platform?: Database["public"]["Enums"]["campaign_platform"]
+          revenue?: number
+          spent?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["campaign_status"]
+          target_sector?: string | null
+          target_service?: string | null
+          updated_at?: string
+        }
+        Update: {
+          budget?: number
+          created_at?: string
+          created_by?: string | null
+          deals_closed?: number
+          end_date?: string | null
+          id?: string
+          leads_generated?: number
+          name?: string
+          notes?: string | null
+          owner_id?: string | null
+          platform?: Database["public"]["Enums"]["campaign_platform"]
+          revenue?: number
+          spent?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["campaign_status"]
+          target_sector?: string | null
+          target_service?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           assigned_to: string | null
@@ -131,6 +298,78 @@ export type Database = {
           whatsapp?: string | null
         }
         Relationships: []
+      }
+      complaints: {
+        Row: {
+          assigned_to: string | null
+          client_id: string | null
+          complaint_number: string | null
+          complaint_type: Database["public"]["Enums"]["complaint_type"]
+          created_at: string
+          created_by: string | null
+          description: string | null
+          escalated_at: string | null
+          id: string
+          order_id: string | null
+          resolution: string | null
+          resolved_at: string | null
+          severity: Database["public"]["Enums"]["complaint_severity"]
+          status: Database["public"]["Enums"]["complaint_status"]
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          client_id?: string | null
+          complaint_number?: string | null
+          complaint_type?: Database["public"]["Enums"]["complaint_type"]
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          escalated_at?: string | null
+          id?: string
+          order_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          severity?: Database["public"]["Enums"]["complaint_severity"]
+          status?: Database["public"]["Enums"]["complaint_status"]
+          subject: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          client_id?: string | null
+          complaint_number?: string | null
+          complaint_type?: Database["public"]["Enums"]["complaint_type"]
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          escalated_at?: string | null
+          id?: string
+          order_id?: string | null
+          resolution?: string | null
+          resolved_at?: string | null
+          severity?: Database["public"]["Enums"]["complaint_severity"]
+          status?: Database["public"]["Enums"]["complaint_status"]
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "complaints_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "complaints_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       deals: {
         Row: {
@@ -207,6 +446,7 @@ export type Database = {
       leads: {
         Row: {
           assigned_to: string | null
+          campaign_id: string | null
           city: string | null
           client_id: string | null
           company_name: string
@@ -230,6 +470,7 @@ export type Database = {
         }
         Insert: {
           assigned_to?: string | null
+          campaign_id?: string | null
           city?: string | null
           client_id?: string | null
           company_name: string
@@ -253,6 +494,7 @@ export type Database = {
         }
         Update: {
           assigned_to?: string | null
+          campaign_id?: string | null
           city?: string | null
           client_id?: string | null
           company_name?: string
@@ -276,10 +518,184 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "leads_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "leads_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      orders: {
+        Row: {
+          actual_delivery_date: string | null
+          client_id: string | null
+          created_at: string
+          created_by: string | null
+          deal_id: string | null
+          delivery_address: string | null
+          delivery_date: string | null
+          id: string
+          order_number: string | null
+          owner_id: string | null
+          paid_amount: number
+          production_notes: string | null
+          quotation_id: string | null
+          status: Database["public"]["Enums"]["order_status"]
+          title: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          actual_delivery_date?: string | null
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deal_id?: string | null
+          delivery_address?: string | null
+          delivery_date?: string | null
+          id?: string
+          order_number?: string | null
+          owner_id?: string | null
+          paid_amount?: number
+          production_notes?: string | null
+          quotation_id?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          title: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          actual_delivery_date?: string | null
+          client_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deal_id?: string | null
+          delivery_address?: string | null
+          delivery_date?: string | null
+          id?: string
+          order_number?: string | null
+          owner_id?: string | null
+          paid_amount?: number
+          production_notes?: string | null
+          quotation_id?: string | null
+          status?: Database["public"]["Enums"]["order_status"]
+          title?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      portal_tokens: {
+        Row: {
+          client_id: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          token: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          token: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portal_tokens_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      production_stages: {
+        Row: {
+          assigned_to: string | null
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          order_id: string
+          stage_name: string
+          stage_order: number
+          started_at: string | null
+          status: Database["public"]["Enums"]["production_stage_status"]
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id: string
+          stage_name: string
+          stage_order?: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["production_stage_status"]
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          order_id?: string
+          stage_name?: string
+          stage_order?: number
+          started_at?: string | null
+          status?: Database["public"]["Enums"]["production_stage_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "production_stages_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]
@@ -316,6 +732,53 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      quotation_items: {
+        Row: {
+          created_at: string
+          description: string
+          discount_pct: number
+          id: string
+          quantity: number
+          quotation_id: string
+          sort_order: number
+          total: number
+          unit: string | null
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          discount_pct?: number
+          id?: string
+          quantity?: number
+          quotation_id: string
+          sort_order?: number
+          total?: number
+          unit?: string | null
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          discount_pct?: number
+          id?: string
+          quantity?: number
+          quotation_id?: string
+          sort_order?: number
+          total?: number
+          unit?: string | null
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotation_items_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       quotations: {
         Row: {
@@ -545,7 +1008,38 @@ export type Database = {
         | "accounting"
         | "customer_service"
         | "viewer"
+      automation_status: "active" | "paused" | "draft"
+      campaign_platform:
+        | "meta"
+        | "google"
+        | "linkedin"
+        | "email"
+        | "whatsapp"
+        | "seo"
+        | "exhibition"
+        | "other"
+      campaign_status:
+        | "planned"
+        | "active"
+        | "paused"
+        | "completed"
+        | "cancelled"
       client_type: "new" | "repeat" | "vip" | "dormant"
+      complaint_severity: "low" | "medium" | "high" | "critical"
+      complaint_status:
+        | "open"
+        | "investigating"
+        | "resolved"
+        | "escalated"
+        | "closed"
+      complaint_type:
+        | "delay"
+        | "color_mismatch"
+        | "material"
+        | "finishing"
+        | "quantity_shortage"
+        | "damage"
+        | "other"
       deal_stage:
         | "new_lead"
         | "contacted"
@@ -568,6 +1062,22 @@ export type Database = {
         | "converted"
         | "lost"
       lead_temperature: "hot" | "warm" | "cold"
+      order_status:
+        | "new"
+        | "in_production"
+        | "quality_check"
+        | "packaging"
+        | "ready"
+        | "shipped"
+        | "delivered"
+        | "cancelled"
+        | "on_hold"
+      production_stage_status:
+        | "pending"
+        | "in_progress"
+        | "done"
+        | "blocked"
+        | "skipped"
       quotation_status:
         | "draft"
         | "waiting_pricing"
@@ -718,7 +1228,42 @@ export const Constants = {
         "customer_service",
         "viewer",
       ],
+      automation_status: ["active", "paused", "draft"],
+      campaign_platform: [
+        "meta",
+        "google",
+        "linkedin",
+        "email",
+        "whatsapp",
+        "seo",
+        "exhibition",
+        "other",
+      ],
+      campaign_status: [
+        "planned",
+        "active",
+        "paused",
+        "completed",
+        "cancelled",
+      ],
       client_type: ["new", "repeat", "vip", "dormant"],
+      complaint_severity: ["low", "medium", "high", "critical"],
+      complaint_status: [
+        "open",
+        "investigating",
+        "resolved",
+        "escalated",
+        "closed",
+      ],
+      complaint_type: [
+        "delay",
+        "color_mismatch",
+        "material",
+        "finishing",
+        "quantity_shortage",
+        "damage",
+        "other",
+      ],
       deal_stage: [
         "new_lead",
         "contacted",
@@ -743,6 +1288,24 @@ export const Constants = {
         "lost",
       ],
       lead_temperature: ["hot", "warm", "cold"],
+      order_status: [
+        "new",
+        "in_production",
+        "quality_check",
+        "packaging",
+        "ready",
+        "shipped",
+        "delivered",
+        "cancelled",
+        "on_hold",
+      ],
+      production_stage_status: [
+        "pending",
+        "in_progress",
+        "done",
+        "blocked",
+        "skipped",
+      ],
       quotation_status: [
         "draft",
         "waiting_pricing",

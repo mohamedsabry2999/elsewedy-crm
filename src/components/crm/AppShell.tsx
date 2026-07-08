@@ -14,6 +14,11 @@ import {
   LogOut,
   Search,
   Bell,
+  Package,
+  Factory,
+  Bot,
+  Zap,
+  ExternalLink,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -33,19 +38,25 @@ import { toast } from "sonner";
 import logoAsset from "@/assets/elsewedy-logo.png.asset.json";
 import { useQueryClient } from "@tanstack/react-query";
 
-type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }> };
+type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; group?: string };
 
 const NAV: NavItem[] = [
-  { to: "/", label: "لوحة التحكم", icon: LayoutDashboard },
-  { to: "/leads", label: "العملاء المحتملون", icon: Users },
-  { to: "/clients", label: "العملاء", icon: Building2 },
-  { to: "/pipeline", label: "خط أنابيب المبيعات", icon: KanbanSquare },
-  { to: "/tasks", label: "المهام والمتابعات", icon: CheckSquare },
-  { to: "/quotations", label: "عروض الأسعار", icon: FileText },
-  { to: "/campaigns", label: "الحملات التسويقية", icon: Megaphone },
-  { to: "/complaints", label: "الشكاوى", icon: MessageSquareWarning },
-  { to: "/reports", label: "التقارير", icon: BarChart3 },
+  { to: "/", label: "لوحة التحكم", icon: LayoutDashboard, group: "الرئيسية" },
+  { to: "/leads", label: "العملاء المحتملون", icon: Users, group: "المبيعات" },
+  { to: "/clients", label: "العملاء", icon: Building2, group: "المبيعات" },
+  { to: "/pipeline", label: "خط أنابيب المبيعات", icon: KanbanSquare, group: "المبيعات" },
+  { to: "/tasks", label: "المهام والمتابعات", icon: CheckSquare, group: "المبيعات" },
+  { to: "/quotations", label: "عروض الأسعار", icon: FileText, group: "المبيعات" },
+  { to: "/orders", label: "الطلبات", icon: Package, group: "التشغيل" },
+  { to: "/production", label: "تتبع الإنتاج", icon: Factory, group: "التشغيل" },
+  { to: "/complaints", label: "الشكاوى", icon: MessageSquareWarning, group: "التشغيل" },
+  { to: "/campaigns", label: "الحملات التسويقية", icon: Megaphone, group: "التسويق" },
+  { to: "/automation", label: "الأتمتة", icon: Zap, group: "الذكاء" },
+  { to: "/assistant", label: "المساعد الذكي", icon: Bot, group: "الذكاء" },
+  { to: "/reports", label: "التقارير", icon: BarChart3, group: "التحليلات" },
+  { to: "/portal-links", label: "بوابة العميل", icon: ExternalLink, group: "التحليلات" },
 ];
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [email, setEmail] = useState<string>("");

@@ -38,6 +38,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import logoAsset from "@/assets/elsewedy-logo.png.asset.json";
 import { useQueryClient } from "@tanstack/react-query";
+import { GlobalSearch } from "./GlobalSearch";
 
 type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; group?: string };
 

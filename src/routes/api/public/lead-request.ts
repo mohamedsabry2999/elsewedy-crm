@@ -124,7 +124,18 @@ export const Route = createFileRoute("/api/public/lead-request")({
 
           if (error) throw error;
 
+          await supabaseAdmin.from("notifications").insert({
+            role: "sales_manager",
+            kind: "external_request",
+            title: `طلب خارجي جديد من ${body.company_name}`,
+            body: `${body.contact_person ?? ""} — ${body.service ?? "خدمة غير محددة"}${body.city ? ` (${body.city})` : ""}`.trim(),
+            link: "/leads",
+            entity_type: "lead",
+            entity_id: inserted.id,
+          } as never);
+
           return Response.json({ ok: true, duplicate: false, leadId: inserted.id }, { headers: CORS });
+
         } catch (err) {
           console.error("[lead-request]", err);
           return Response.json(

@@ -38,10 +38,12 @@ type Quote = {
 
 
 export function printQuotationPDF(q: Quote) {
-  const subtotal = Number(q.total_price ?? 0);
-  const vat = q.vat_amount != null ? Number(q.vat_amount) : subtotal * 0.14;
+  const itemsSubtotal = (q.items ?? []).reduce((s, it) => s + Number(it.total || 0), 0);
+  const subtotal = q.items && q.items.length > 0 ? itemsSubtotal : Number(q.total_price ?? 0);
   const discount = Number(q.discount ?? 0);
-  const final = q.final_price != null ? Number(q.final_price) : subtotal + vat - discount;
+  const vat = q.vat_amount != null ? Number(q.vat_amount) : (subtotal - discount) * 0.14;
+  const final = q.final_price != null && q.final_price !== 0 ? Number(q.final_price) : subtotal - discount + vat;
+
 
   const html = `<!doctype html>
 <html lang="ar" dir="rtl">

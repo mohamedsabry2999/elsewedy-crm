@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, FileText } from "lucide-react";
+import { Plus, FileText, Printer } from "lucide-react";
+import { printQuotationPDF } from "@/lib/quotation-pdf";
+
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/crm/PageHeader";
 import { Card } from "@/components/ui/card";
@@ -71,12 +73,14 @@ function QuotationsPage() {
               <TableHead className="text-right">القيمة الإجمالية</TableHead>
               <TableHead className="text-right">تاريخ التسليم</TableHead>
               <TableHead className="text-right">الحالة</TableHead>
+              <TableHead className="text-right">إجراءات</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
-            {isLoading && <TableRow><TableCell colSpan={7} className="text-center py-8 text-muted-foreground">جارٍ التحميل...</TableCell></TableRow>}
+            {isLoading && <TableRow><TableCell colSpan={8} className="text-center py-8 text-muted-foreground">جارٍ التحميل...</TableCell></TableRow>}
             {!isLoading && (quotes ?? []).length === 0 && (
-              <TableRow><TableCell colSpan={7} className="text-center py-16 text-muted-foreground">
+              <TableRow><TableCell colSpan={8} className="text-center py-16 text-muted-foreground">
                 <FileText className="h-10 w-10 mx-auto mb-3 opacity-50" />
                 لا توجد عروض أسعار بعد.
               </TableCell></TableRow>
@@ -90,8 +94,14 @@ function QuotationsPage() {
                 <TableCell className="font-semibold text-primary ltr-nums">{formatEGP(q.total_price)}</TableCell>
                 <TableCell>{formatDate(q.delivery_date)}</TableCell>
                 <TableCell><Badge variant="secondary">{labelOf(QUOTATION_STATUSES, q.status)}</Badge></TableCell>
+                <TableCell>
+                  <Button size="sm" variant="outline" className="gap-1" onClick={() => printQuotationPDF(q)}>
+                    <Printer className="h-3.5 w-3.5" /> PDF
+                  </Button>
+                </TableCell>
               </TableRow>
             ))}
+
           </TableBody>
         </Table>
       </Card>

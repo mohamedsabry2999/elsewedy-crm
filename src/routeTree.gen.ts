@@ -12,14 +12,20 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
+import { Route as PortalTokenRouteImport } from './routes/portal.$token'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedQuotationsRouteImport } from './routes/_authenticated/quotations'
+import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated/production'
+import { Route as AuthenticatedPortalLinksRouteImport } from './routes/_authenticated/portal-links'
 import { Route as AuthenticatedPipelineRouteImport } from './routes/_authenticated/pipeline'
+import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedCampaignsRouteImport } from './routes/_authenticated/campaigns'
+import { Route as AuthenticatedAutomationRouteImport } from './routes/_authenticated/automation'
+import { Route as AuthenticatedAssistantRouteImport } from './routes/_authenticated/assistant'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -34,6 +40,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const PortalTokenRoute = PortalTokenRouteImport.update({
+  id: '/portal/$token',
+  path: '/portal/$token',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   id: '/tasks',
@@ -50,9 +61,25 @@ const AuthenticatedQuotationsRoute = AuthenticatedQuotationsRouteImport.update({
   path: '/quotations',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProductionRoute = AuthenticatedProductionRouteImport.update({
+  id: '/production',
+  path: '/production',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedPortalLinksRoute =
+  AuthenticatedPortalLinksRouteImport.update({
+    id: '/portal-links',
+    path: '/portal-links',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPipelineRoute = AuthenticatedPipelineRouteImport.update({
   id: '/pipeline',
   path: '/pipeline',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLeadsRoute = AuthenticatedLeadsRouteImport.update({
@@ -75,43 +102,71 @@ const AuthenticatedCampaignsRoute = AuthenticatedCampaignsRouteImport.update({
   path: '/campaigns',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAutomationRoute = AuthenticatedAutomationRouteImport.update({
+  id: '/automation',
+  path: '/automation',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAssistantRoute = AuthenticatedAssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
+  '/assistant': typeof AuthenticatedAssistantRoute
+  '/automation': typeof AuthenticatedAutomationRoute
   '/campaigns': typeof AuthenticatedCampaignsRoute
   '/clients': typeof AuthenticatedClientsRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/leads': typeof AuthenticatedLeadsRoute
+  '/orders': typeof AuthenticatedOrdersRoute
   '/pipeline': typeof AuthenticatedPipelineRoute
+  '/portal-links': typeof AuthenticatedPortalLinksRoute
+  '/production': typeof AuthenticatedProductionRoute
   '/quotations': typeof AuthenticatedQuotationsRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/portal/$token': typeof PortalTokenRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
+  '/assistant': typeof AuthenticatedAssistantRoute
+  '/automation': typeof AuthenticatedAutomationRoute
   '/campaigns': typeof AuthenticatedCampaignsRoute
   '/clients': typeof AuthenticatedClientsRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/leads': typeof AuthenticatedLeadsRoute
+  '/orders': typeof AuthenticatedOrdersRoute
   '/pipeline': typeof AuthenticatedPipelineRoute
+  '/portal-links': typeof AuthenticatedPortalLinksRoute
+  '/production': typeof AuthenticatedProductionRoute
   '/quotations': typeof AuthenticatedQuotationsRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/portal/$token': typeof PortalTokenRoute
   '/': typeof AuthenticatedIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/assistant': typeof AuthenticatedAssistantRoute
+  '/_authenticated/automation': typeof AuthenticatedAutomationRoute
   '/_authenticated/campaigns': typeof AuthenticatedCampaignsRoute
   '/_authenticated/clients': typeof AuthenticatedClientsRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRoute
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
+  '/_authenticated/orders': typeof AuthenticatedOrdersRoute
   '/_authenticated/pipeline': typeof AuthenticatedPipelineRoute
+  '/_authenticated/portal-links': typeof AuthenticatedPortalLinksRoute
+  '/_authenticated/production': typeof AuthenticatedProductionRoute
   '/_authenticated/quotations': typeof AuthenticatedQuotationsRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
+  '/portal/$token': typeof PortalTokenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
 }
 export interface FileRouteTypes {
@@ -119,44 +174,63 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/assistant'
+    | '/automation'
     | '/campaigns'
     | '/clients'
     | '/complaints'
     | '/leads'
+    | '/orders'
     | '/pipeline'
+    | '/portal-links'
+    | '/production'
     | '/quotations'
     | '/reports'
     | '/tasks'
+    | '/portal/$token'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
+    | '/assistant'
+    | '/automation'
     | '/campaigns'
     | '/clients'
     | '/complaints'
     | '/leads'
+    | '/orders'
     | '/pipeline'
+    | '/portal-links'
+    | '/production'
     | '/quotations'
     | '/reports'
     | '/tasks'
+    | '/portal/$token'
     | '/'
   id:
     | '__root__'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/assistant'
+    | '/_authenticated/automation'
     | '/_authenticated/campaigns'
     | '/_authenticated/clients'
     | '/_authenticated/complaints'
     | '/_authenticated/leads'
+    | '/_authenticated/orders'
     | '/_authenticated/pipeline'
+    | '/_authenticated/portal-links'
+    | '/_authenticated/production'
     | '/_authenticated/quotations'
     | '/_authenticated/reports'
     | '/_authenticated/tasks'
+    | '/portal/$token'
     | '/_authenticated/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  PortalTokenRoute: typeof PortalTokenRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -182,6 +256,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/portal/$token': {
+      id: '/portal/$token'
+      path: '/portal/$token'
+      fullPath: '/portal/$token'
+      preLoaderRoute: typeof PortalTokenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/tasks': {
       id: '/_authenticated/tasks'
       path: '/tasks'
@@ -203,11 +284,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedQuotationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/production': {
+      id: '/_authenticated/production'
+      path: '/production'
+      fullPath: '/production'
+      preLoaderRoute: typeof AuthenticatedProductionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/portal-links': {
+      id: '/_authenticated/portal-links'
+      path: '/portal-links'
+      fullPath: '/portal-links'
+      preLoaderRoute: typeof AuthenticatedPortalLinksRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/pipeline': {
       id: '/_authenticated/pipeline'
       path: '/pipeline'
       fullPath: '/pipeline'
       preLoaderRoute: typeof AuthenticatedPipelineRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/orders': {
+      id: '/_authenticated/orders'
+      path: '/orders'
+      fullPath: '/orders'
+      preLoaderRoute: typeof AuthenticatedOrdersRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/leads': {
@@ -238,15 +340,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCampaignsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/automation': {
+      id: '/_authenticated/automation'
+      path: '/automation'
+      fullPath: '/automation'
+      preLoaderRoute: typeof AuthenticatedAutomationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/assistant': {
+      id: '/_authenticated/assistant'
+      path: '/assistant'
+      fullPath: '/assistant'
+      preLoaderRoute: typeof AuthenticatedAssistantRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAssistantRoute: typeof AuthenticatedAssistantRoute
+  AuthenticatedAutomationRoute: typeof AuthenticatedAutomationRoute
   AuthenticatedCampaignsRoute: typeof AuthenticatedCampaignsRoute
   AuthenticatedClientsRoute: typeof AuthenticatedClientsRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRoute
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
+  AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
   AuthenticatedPipelineRoute: typeof AuthenticatedPipelineRoute
+  AuthenticatedPortalLinksRoute: typeof AuthenticatedPortalLinksRoute
+  AuthenticatedProductionRoute: typeof AuthenticatedProductionRoute
   AuthenticatedQuotationsRoute: typeof AuthenticatedQuotationsRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
@@ -254,11 +375,16 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAssistantRoute: AuthenticatedAssistantRoute,
+  AuthenticatedAutomationRoute: AuthenticatedAutomationRoute,
   AuthenticatedCampaignsRoute: AuthenticatedCampaignsRoute,
   AuthenticatedClientsRoute: AuthenticatedClientsRoute,
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRoute,
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
+  AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
   AuthenticatedPipelineRoute: AuthenticatedPipelineRoute,
+  AuthenticatedPortalLinksRoute: AuthenticatedPortalLinksRoute,
+  AuthenticatedProductionRoute: AuthenticatedProductionRoute,
   AuthenticatedQuotationsRoute: AuthenticatedQuotationsRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
@@ -271,6 +397,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  PortalTokenRoute: PortalTokenRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -14,6 +14,11 @@ import {
   LogOut,
   Search,
   Bell,
+  Package,
+  Factory,
+  Bot,
+  Zap,
+  ExternalLink,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -33,19 +38,25 @@ import { toast } from "sonner";
 import logoAsset from "@/assets/elsewedy-logo.png.asset.json";
 import { useQueryClient } from "@tanstack/react-query";
 
-type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }> };
+type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; group?: string };
 
 const NAV: NavItem[] = [
-  { to: "/", label: "لوحة التحكم", icon: LayoutDashboard },
-  { to: "/leads", label: "العملاء المحتملون", icon: Users },
-  { to: "/clients", label: "العملاء", icon: Building2 },
-  { to: "/pipeline", label: "خط أنابيب المبيعات", icon: KanbanSquare },
-  { to: "/tasks", label: "المهام والمتابعات", icon: CheckSquare },
-  { to: "/quotations", label: "عروض الأسعار", icon: FileText },
-  { to: "/campaigns", label: "الحملات التسويقية", icon: Megaphone },
-  { to: "/complaints", label: "الشكاوى", icon: MessageSquareWarning },
-  { to: "/reports", label: "التقارير", icon: BarChart3 },
+  { to: "/", label: "لوحة التحكم", icon: LayoutDashboard, group: "الرئيسية" },
+  { to: "/leads", label: "العملاء المحتملون", icon: Users, group: "المبيعات" },
+  { to: "/clients", label: "العملاء", icon: Building2, group: "المبيعات" },
+  { to: "/pipeline", label: "خط أنابيب المبيعات", icon: KanbanSquare, group: "المبيعات" },
+  { to: "/tasks", label: "المهام والمتابعات", icon: CheckSquare, group: "المبيعات" },
+  { to: "/quotations", label: "عروض الأسعار", icon: FileText, group: "المبيعات" },
+  { to: "/orders", label: "الطلبات", icon: Package, group: "التشغيل" },
+  { to: "/production", label: "تتبع الإنتاج", icon: Factory, group: "التشغيل" },
+  { to: "/complaints", label: "الشكاوى", icon: MessageSquareWarning, group: "التشغيل" },
+  { to: "/campaigns", label: "الحملات التسويقية", icon: Megaphone, group: "التسويق" },
+  { to: "/automation", label: "الأتمتة", icon: Zap, group: "الذكاء" },
+  { to: "/assistant", label: "المساعد الذكي", icon: Bot, group: "الذكاء" },
+  { to: "/reports", label: "التقارير", icon: BarChart3, group: "التحليلات" },
+  { to: "/portal-links", label: "بوابة العميل", icon: ExternalLink, group: "التحليلات" },
 ];
+
 
 export function AppShell({ children }: { children: ReactNode }) {
   const [email, setEmail] = useState<string>("");
@@ -142,27 +153,37 @@ function SidebarInner() {
           <p className="text-[10px] text-sidebar-foreground/60">Growth Platform</p>
         </div>
       </div>
-      <nav className="flex-1 overflow-y-auto p-3 space-y-1">
-        {NAV.map((item) => {
-          const active = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                active
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-elegant"
-                  : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-              )}
-            >
-              <Icon className="h-4 w-4 shrink-0" />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto p-3 space-y-4">
+        {Array.from(new Set(NAV.map((n) => n.group ?? ""))).map((group) => (
+          <div key={group} className="space-y-1">
+            {group && (
+              <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
+                {group}
+              </p>
+            )}
+            {NAV.filter((n) => (n.group ?? "") === group).map((item) => {
+              const active = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-elegant"
+                      : "text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                  )}
+                >
+                  <Icon className="h-4 w-4 shrink-0" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
+
       <div className="p-4 border-t border-sidebar-border text-[11px] text-sidebar-foreground/50">
         الإصدار 1.0 — المرحلة الأولى
       </div>

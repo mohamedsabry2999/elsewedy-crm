@@ -28,6 +28,7 @@ import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCampaignsRouteImport } from './routes/_authenticated/campaigns'
 import { Route as AuthenticatedAutomationRouteImport } from './routes/_authenticated/automation'
 import { Route as AuthenticatedAssistantRouteImport } from './routes/_authenticated/assistant'
+import { Route as AuthenticatedQuotationsIdRouteImport } from './routes/_authenticated/quotations.$id'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -125,6 +126,12 @@ const AuthenticatedAssistantRoute = AuthenticatedAssistantRouteImport.update({
   path: '/assistant',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedQuotationsIdRoute =
+  AuthenticatedQuotationsIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedQuotationsRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -141,10 +148,11 @@ export interface FileRoutesByFullPath {
   '/pipeline': typeof AuthenticatedPipelineRoute
   '/portal-links': typeof AuthenticatedPortalLinksRoute
   '/production': typeof AuthenticatedProductionRoute
-  '/quotations': typeof AuthenticatedQuotationsRoute
+  '/quotations': typeof AuthenticatedQuotationsRouteWithChildren
   '/reports': typeof AuthenticatedReportsRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/portal/$token': typeof PortalTokenRoute
+  '/quotations/$id': typeof AuthenticatedQuotationsIdRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
@@ -160,11 +168,12 @@ export interface FileRoutesByTo {
   '/pipeline': typeof AuthenticatedPipelineRoute
   '/portal-links': typeof AuthenticatedPortalLinksRoute
   '/production': typeof AuthenticatedProductionRoute
-  '/quotations': typeof AuthenticatedQuotationsRoute
+  '/quotations': typeof AuthenticatedQuotationsRouteWithChildren
   '/reports': typeof AuthenticatedReportsRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/portal/$token': typeof PortalTokenRoute
   '/': typeof AuthenticatedIndexRoute
+  '/quotations/$id': typeof AuthenticatedQuotationsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -182,11 +191,12 @@ export interface FileRoutesById {
   '/_authenticated/pipeline': typeof AuthenticatedPipelineRoute
   '/_authenticated/portal-links': typeof AuthenticatedPortalLinksRoute
   '/_authenticated/production': typeof AuthenticatedProductionRoute
-  '/_authenticated/quotations': typeof AuthenticatedQuotationsRoute
+  '/_authenticated/quotations': typeof AuthenticatedQuotationsRouteWithChildren
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
   '/portal/$token': typeof PortalTokenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/quotations/$id': typeof AuthenticatedQuotationsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/reports'
     | '/tasks'
     | '/portal/$token'
+    | '/quotations/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/portal/$token'
     | '/'
+    | '/quotations/$id'
   id:
     | '__root__'
     | '/_authenticated'
@@ -250,6 +262,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks'
     | '/portal/$token'
     | '/_authenticated/'
+    | '/_authenticated/quotations/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -393,8 +406,29 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssistantRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/quotations/$id': {
+      id: '/_authenticated/quotations/$id'
+      path: '/$id'
+      fullPath: '/quotations/$id'
+      preLoaderRoute: typeof AuthenticatedQuotationsIdRouteImport
+      parentRoute: typeof AuthenticatedQuotationsRoute
+    }
   }
 }
+
+interface AuthenticatedQuotationsRouteChildren {
+  AuthenticatedQuotationsIdRoute: typeof AuthenticatedQuotationsIdRoute
+}
+
+const AuthenticatedQuotationsRouteChildren: AuthenticatedQuotationsRouteChildren =
+  {
+    AuthenticatedQuotationsIdRoute: AuthenticatedQuotationsIdRoute,
+  }
+
+const AuthenticatedQuotationsRouteWithChildren =
+  AuthenticatedQuotationsRoute._addFileChildren(
+    AuthenticatedQuotationsRouteChildren,
+  )
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAssistantRoute: typeof AuthenticatedAssistantRoute
@@ -409,7 +443,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPipelineRoute: typeof AuthenticatedPipelineRoute
   AuthenticatedPortalLinksRoute: typeof AuthenticatedPortalLinksRoute
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRoute
-  AuthenticatedQuotationsRoute: typeof AuthenticatedQuotationsRoute
+  AuthenticatedQuotationsRoute: typeof AuthenticatedQuotationsRouteWithChildren
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
@@ -428,7 +462,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPipelineRoute: AuthenticatedPipelineRoute,
   AuthenticatedPortalLinksRoute: AuthenticatedPortalLinksRoute,
   AuthenticatedProductionRoute: AuthenticatedProductionRoute,
-  AuthenticatedQuotationsRoute: AuthenticatedQuotationsRoute,
+  AuthenticatedQuotationsRoute: AuthenticatedQuotationsRouteWithChildren,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,

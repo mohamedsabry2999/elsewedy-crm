@@ -85,11 +85,21 @@ export const Route = createFileRoute("/api/public/lead-request")({
               subject: "طلب خارجي جديد (تكرار)",
               description: `تم استلام طلب جديد من نفس العميل عبر النموذج العام.\nالخدمة: ${body.service ?? "—"}\n${notes ?? ""}`.trim(),
             } as never);
+            await supabaseAdmin.from("notifications").insert({
+              role: "sales_manager",
+              kind: "external_request",
+              title: `طلب متكرر من ${body.company_name}`,
+              body: `عميل موجود مسبقاً أرسل طلباً جديداً${body.service ? ` — ${body.service}` : ""}`,
+              link: "/leads",
+              entity_type: "lead",
+              entity_id: existing[0].id,
+            } as never);
             return Response.json(
               { ok: true, duplicate: true, leadId: existing[0].id },
               { headers: CORS },
             );
           }
+
 
           const { data: inserted, error } = await supabaseAdmin
             .from("leads")

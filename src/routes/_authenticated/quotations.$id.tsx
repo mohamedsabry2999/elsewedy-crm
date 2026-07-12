@@ -147,10 +147,8 @@ function QuotationDetailPage() {
 
   const transition = useMutation({
     mutationFn: async (next: "sent" | "approved") => {
-      const patch: Record<string, unknown> = { status: next };
-      if (next === "sent") patch.sent_date = new Date().toISOString();
-      if (next === "approved") patch.approved_date = new Date().toISOString();
-      const { error } = await supabase.from("quotations").update(patch as never).eq("id", id);
+      const { error } = await supabase.from("quotations")
+        .update({ status: next as "sent" } as never).eq("id", id);
       if (error) throw error;
       await logActivity(`quote_${next}`,
         `عرض ${quote?.quote_number} — ${next === "sent" ? "أُرسل للعميل" : "تم اعتماده"}`,

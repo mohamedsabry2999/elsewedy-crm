@@ -20,6 +20,9 @@ import logoAsset from "@/assets/elsewedy-logo.png.asset.json";
 import { useQueryClient } from "@tanstack/react-query";
 import { GlobalSearch } from "./GlobalSearch";
 import { NotificationsBell } from "./NotificationsBell";
+import { RequireModule } from "./RequireModule";
+import { useRoles } from "@/hooks/useRoles";
+import { canViewModule, type ModuleKey } from "@/lib/permissions";
 
 
 type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; group?: string };
@@ -131,7 +134,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </header>
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8"><RequireModule>{children}</RequireModule></main>
       </div>
     </div>
   );
@@ -139,6 +142,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 function SidebarInner() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { roles } = useRoles();
+  const visibleNav = NAV.filter((n) => {
+    const key = (n.to === "/" ? "dashboard" : n.to.replace(/^\/+/, "").split("/")[0]) as ModuleKey;
+    return canViewModule(roles, key);
+  });
   return (
     <>
       <div className="h-16 flex items-center gap-3 px-5 border-b border-sidebar-border">
@@ -151,14 +159,14 @@ function SidebarInner() {
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto p-3 space-y-4">
-        {Array.from(new Set(NAV.map((n) => n.group ?? ""))).map((group) => (
+        {Array.from(new Set(visibleNav.map((n) => n.group ?? ""))).map((group) => (
           <div key={group} className="space-y-1">
             {group && (
               <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
                 {group}
               </p>
             )}
-            {NAV.filter((n) => (n.group ?? "") === group).map((item) => {
+            {visibleNav.filter((n) => (n.group ?? "") === group).map((item) => {
               const active = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
               const Icon = item.icon;
               return (

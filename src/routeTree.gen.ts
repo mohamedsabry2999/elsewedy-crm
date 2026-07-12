@@ -21,6 +21,7 @@ import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedSamplesRouteImport } from './routes/_authenticated/samples'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated/production'
 import { Route as AuthenticatedPricingRequestsRouteImport } from './routes/_authenticated/pricing-requests'
 import { Route as AuthenticatedPortalLinksRouteImport } from './routes/_authenticated/portal-links'
@@ -103,6 +104,11 @@ const AuthenticatedSamplesRoute = AuthenticatedSamplesRouteImport.update({
 const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProductionRoute = AuthenticatedProductionRouteImport.update({
@@ -260,6 +266,7 @@ export interface FileRoutesByFullPath {
   '/portal-links': typeof AuthenticatedPortalLinksRoute
   '/pricing-requests': typeof AuthenticatedPricingRequestsRoute
   '/production': typeof AuthenticatedProductionRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/samples': typeof AuthenticatedSamplesRoute
   '/tasks': typeof AuthenticatedTasksRoute
@@ -296,6 +303,7 @@ export interface FileRoutesByTo {
   '/portal-links': typeof AuthenticatedPortalLinksRoute
   '/pricing-requests': typeof AuthenticatedPricingRequestsRoute
   '/production': typeof AuthenticatedProductionRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/samples': typeof AuthenticatedSamplesRoute
   '/tasks': typeof AuthenticatedTasksRoute
@@ -335,6 +343,7 @@ export interface FileRoutesById {
   '/_authenticated/portal-links': typeof AuthenticatedPortalLinksRoute
   '/_authenticated/pricing-requests': typeof AuthenticatedPricingRequestsRoute
   '/_authenticated/production': typeof AuthenticatedProductionRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/samples': typeof AuthenticatedSamplesRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
@@ -375,6 +384,7 @@ export interface FileRouteTypes {
     | '/portal-links'
     | '/pricing-requests'
     | '/production'
+    | '/profile'
     | '/reports'
     | '/samples'
     | '/tasks'
@@ -411,6 +421,7 @@ export interface FileRouteTypes {
     | '/portal-links'
     | '/pricing-requests'
     | '/production'
+    | '/profile'
     | '/reports'
     | '/samples'
     | '/tasks'
@@ -449,6 +460,7 @@ export interface FileRouteTypes {
     | '/_authenticated/portal-links'
     | '/_authenticated/pricing-requests'
     | '/_authenticated/production'
+    | '/_authenticated/profile'
     | '/_authenticated/reports'
     | '/_authenticated/samples'
     | '/_authenticated/tasks'
@@ -556,6 +568,13 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof AuthenticatedReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/production': {
@@ -761,6 +780,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalLinksRoute: typeof AuthenticatedPortalLinksRoute
   AuthenticatedPricingRequestsRoute: typeof AuthenticatedPricingRequestsRoute
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSamplesRoute: typeof AuthenticatedSamplesRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
@@ -791,6 +811,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalLinksRoute: AuthenticatedPortalLinksRoute,
   AuthenticatedPricingRequestsRoute: AuthenticatedPricingRequestsRoute,
   AuthenticatedProductionRoute: AuthenticatedProductionRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSamplesRoute: AuthenticatedSamplesRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,

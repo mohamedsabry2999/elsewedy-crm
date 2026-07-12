@@ -182,7 +182,7 @@ function SidebarInner() {
       </nav>
 
       <div className="p-4 border-t border-sidebar-border text-[11px] text-sidebar-foreground/50">
-        الإصدار 1.0 — المرحلة الأولى
+        الإصدار 2.0 — النظام التشغيلي التجاري
       </div>
     </>
   );

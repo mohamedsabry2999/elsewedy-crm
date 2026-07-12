@@ -12,7 +12,7 @@ export function StatCard({
 }: {
   label: string;
   value: string | number;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   hint?: string;
   trend?: string;
   tone?: "default" | "primary" | "success" | "warning" | "info";
@@ -34,11 +34,14 @@ export function StatCard({
             {hint && <p className="mt-1 text-[11px] text-muted-foreground">{hint}</p>}
             {trend && <p className="mt-2 text-xs font-medium text-success">{trend}</p>}
           </div>
-          <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center shrink-0", tones[tone])}>
-            <Icon className="h-5 w-5" />
-          </div>
+          {Icon && (
+            <div className={cn("h-10 w-10 rounded-lg flex items-center justify-center shrink-0", tones[tone])}>
+              <Icon className="h-5 w-5" />
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
   );
 }
+

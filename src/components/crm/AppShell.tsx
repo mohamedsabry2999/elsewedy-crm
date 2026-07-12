@@ -20,6 +20,9 @@ import logoAsset from "@/assets/elsewedy-logo.png.asset.json";
 import { useQueryClient } from "@tanstack/react-query";
 import { GlobalSearch } from "./GlobalSearch";
 import { NotificationsBell } from "./NotificationsBell";
+import { RequireModule } from "./RequireModule";
+import { useRoles } from "@/hooks/useRoles";
+import { canViewModule, type ModuleKey } from "@/lib/permissions";
 
 
 type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; group?: string };

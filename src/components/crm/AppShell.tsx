@@ -134,7 +134,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </DropdownMenu>
         </header>
 
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8"><RequireModule>{children}</RequireModule></main>
       </div>
     </div>
   );

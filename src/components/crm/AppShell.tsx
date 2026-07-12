@@ -45,6 +45,8 @@ const NAV: NavItem[] = [
   { to: "/production", label: "تتبع الإنتاج", icon: Factory, group: "التشغيل" },
   { to: "/deliveries", label: "التسليمات", icon: Truck, group: "التشغيل" },
   { to: "/complaints", label: "الشكاوى", icon: MessageSquareWarning, group: "التشغيل" },
+  { to: "/artwork", label: "ملفات التصميم", icon: ImageIcon, group: "التشغيل" },
+
 
   { to: "/payments", label: "التحصيلات", icon: Wallet, group: "المالية" },
 

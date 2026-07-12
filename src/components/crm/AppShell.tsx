@@ -142,6 +142,11 @@ export function AppShell({ children }: { children: ReactNode }) {
 
 function SidebarInner() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { roles } = useRoles();
+  const visibleNav = NAV.filter((n) => {
+    const key = (n.to === "/" ? "dashboard" : n.to.replace(/^\/+/, "").split("/")[0]) as ModuleKey;
+    return canViewModule(roles, key);
+  });
   return (
     <>
       <div className="h-16 flex items-center gap-3 px-5 border-b border-sidebar-border">

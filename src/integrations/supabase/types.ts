@@ -1681,6 +1681,9 @@ export type Database = {
         | "accounting"
         | "customer_service"
         | "viewer"
+        | "production"
+        | "finance"
+        | "quality_control"
       automation_status: "active" | "paused" | "draft"
       campaign_platform:
         | "meta"
@@ -1900,6 +1903,9 @@ export const Constants = {
         "accounting",
         "customer_service",
         "viewer",
+        "production",
+        "finance",
+        "quality_control",
       ],
       automation_status: ["active", "paused", "draft"],
       campaign_platform: [

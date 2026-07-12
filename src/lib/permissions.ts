@@ -81,7 +81,8 @@ const MODULE_VIEW: Record<ModuleKey, AppRole[]> = {
   import: ["sales_manager","marketing_manager"],
   "data-quality": ["top_management","sales_manager","marketing_manager","viewer"],
   artwork: ["top_management","sales_manager","sales_person","production","production_planning","quality_control","customer_service","viewer"],
-
+  users: [],
+  profile: ["top_management","sales_manager","sales_person","marketing_manager","pricing_team","production","production_planning","quality_control","finance","accounting","customer_service","viewer"],
 };
 
 // Capability → roles allowed (per module bucket)

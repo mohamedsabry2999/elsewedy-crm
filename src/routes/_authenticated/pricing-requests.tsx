@@ -94,6 +94,7 @@ function PricingRequestsPage() {
             <TableHead className="text-right">السعر</TableHead>
             <TableHead className="text-right">الحالة</TableHead>
             <TableHead className="text-right">أُنشئ</TableHead>
+            <TableHead className="text-right">إجراء</TableHead>
           </TableRow></TableHeader>
           <TableBody>
             {isLoading && <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">جارٍ التحميل...</TableCell></TableRow>}

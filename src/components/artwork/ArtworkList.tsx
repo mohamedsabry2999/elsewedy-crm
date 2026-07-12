@@ -16,12 +16,16 @@ import { notifyRole, logActivity } from "@/lib/journey";
 
 type Props = {
   filter: { client_id?: string; quotation_id?: string; order_id?: string; job_ticket_id?: string; lead_id?: string };
+  statusFilter?: string;
+  search?: string;
+  unassignedOnly?: boolean;
   canReview?: boolean;
   canDelete?: boolean;
   refreshKey?: number;
+  onCountsChange?: (counts: Record<string, number>) => void;
 };
 
-export function ArtworkList({ filter, canReview, canDelete, refreshKey }: Props) {
+export function ArtworkList({ filter, statusFilter, search, unassignedOnly, canReview, canDelete, refreshKey, onCountsChange }: Props) {
   const [rows, setRows] = useState<ArtworkRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [reviewing, setReviewing] = useState<{ row: ArtworkRow; status: string } | null>(null);
@@ -30,14 +34,24 @@ export function ArtworkList({ filter, canReview, canDelete, refreshKey }: Props)
 
   const load = async () => {
     setLoading(true);
-    let q = db.from("artwork_files").select("*").order("created_at", { ascending: false });
+    let q = db.from("artwork_files").select("*").order("created_at", { ascending: false }).limit(500);
     for (const [k, v] of Object.entries(filter)) if (v) q = q.eq(k, v);
+    if (statusFilter && statusFilter !== "all") q = q.eq("status", statusFilter);
+    if (search) q = q.ilike("file_name", `%${search}%`);
+    if (unassignedOnly) q = q.is("client_id", null).is("quotation_id", null).is("order_id", null).is("job_ticket_id", null);
     const { data } = await q;
-    setRows((data as ArtworkRow[]) ?? []);
+    const list = (data as ArtworkRow[]) ?? [];
+    setRows(list);
+    if (onCountsChange) {
+      const c: Record<string, number> = {};
+      list.forEach((r) => { c[r.status] = (c[r.status] ?? 0) + 1; });
+      onCountsChange(c);
+    }
     setLoading(false);
   };
 
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [JSON.stringify(filter), refreshKey]);
+  useEffect(() => { load(); /* eslint-disable-next-line */ }, [JSON.stringify(filter), statusFilter, search, unassignedOnly, refreshKey]);
+
 
   const download = async (r: ArtworkRow) => {
     const url = await getSignedArtworkUrl(r.file_path);

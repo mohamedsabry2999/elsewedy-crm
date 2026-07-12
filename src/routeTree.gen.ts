@@ -36,6 +36,7 @@ import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCampaignsRouteImport } from './routes/_authenticated/campaigns'
 import { Route as AuthenticatedAutomationRouteImport } from './routes/_authenticated/automation'
 import { Route as AuthenticatedAssistantRouteImport } from './routes/_authenticated/assistant'
+import { Route as AuthenticatedArtworkRouteImport } from './routes/_authenticated/artwork'
 import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated/approvals'
 import { Route as AuthenticatedQuotationsIndexRouteImport } from './routes/_authenticated/quotations.index'
 import { Route as ApiPublicLeadRequestRouteImport } from './routes/api/public/lead-request'
@@ -179,6 +180,11 @@ const AuthenticatedAssistantRoute = AuthenticatedAssistantRouteImport.update({
   path: '/assistant',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedArtworkRoute = AuthenticatedArtworkRouteImport.update({
+  id: '/artwork',
+  path: '/artwork',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/artwork': typeof AuthenticatedArtworkRoute
   '/assistant': typeof AuthenticatedAssistantRoute
   '/automation': typeof AuthenticatedAutomationRoute
   '/campaigns': typeof AuthenticatedCampaignsRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/artwork': typeof AuthenticatedArtworkRoute
   '/assistant': typeof AuthenticatedAssistantRoute
   '/automation': typeof AuthenticatedAutomationRoute
   '/campaigns': typeof AuthenticatedCampaignsRoute
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
+  '/_authenticated/artwork': typeof AuthenticatedArtworkRoute
   '/_authenticated/assistant': typeof AuthenticatedAssistantRoute
   '/_authenticated/automation': typeof AuthenticatedAutomationRoute
   '/_authenticated/campaigns': typeof AuthenticatedCampaignsRoute
@@ -308,6 +317,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/request'
     | '/approvals'
+    | '/artwork'
     | '/assistant'
     | '/automation'
     | '/campaigns'
@@ -339,6 +349,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/request'
     | '/approvals'
+    | '/artwork'
     | '/assistant'
     | '/automation'
     | '/campaigns'
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/request'
     | '/_authenticated/approvals'
+    | '/_authenticated/artwork'
     | '/_authenticated/assistant'
     | '/_authenticated/automation'
     | '/_authenticated/campaigns'
@@ -600,6 +612,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssistantRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/artwork': {
+      id: '/_authenticated/artwork'
+      path: '/artwork'
+      fullPath: '/artwork'
+      preLoaderRoute: typeof AuthenticatedArtworkRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/approvals': {
       id: '/_authenticated/approvals'
       path: '/approvals'
@@ -633,6 +652,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
+  AuthenticatedArtworkRoute: typeof AuthenticatedArtworkRoute
   AuthenticatedAssistantRoute: typeof AuthenticatedAssistantRoute
   AuthenticatedAutomationRoute: typeof AuthenticatedAutomationRoute
   AuthenticatedCampaignsRoute: typeof AuthenticatedCampaignsRoute
@@ -661,6 +681,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
+  AuthenticatedArtworkRoute: AuthenticatedArtworkRoute,
   AuthenticatedAssistantRoute: AuthenticatedAssistantRoute,
   AuthenticatedAutomationRoute: AuthenticatedAutomationRoute,
   AuthenticatedCampaignsRoute: AuthenticatedCampaignsRoute,

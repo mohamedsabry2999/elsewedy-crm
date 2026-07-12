@@ -285,6 +285,33 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          id: string
+          performed_by: string | null
+          target_user: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          performed_by?: string | null
+          target_user?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          performed_by?: string | null
+          target_user?: string | null
+        }
+        Relationships: []
+      }
       automation_rules: {
         Row: {
           action_config: Json
@@ -1403,7 +1430,12 @@ export type Database = {
           email: string | null
           full_name: string | null
           id: string
+          job_title: string | null
+          manager_id: string | null
+          must_change_password: boolean
+          notes: string | null
           phone: string | null
+          status: string
           updated_at: string
         }
         Insert: {
@@ -1413,7 +1445,12 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id: string
+          job_title?: string | null
+          manager_id?: string | null
+          must_change_password?: boolean
+          notes?: string | null
           phone?: string | null
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -1423,7 +1460,12 @@ export type Database = {
           email?: string | null
           full_name?: string | null
           id?: string
+          job_title?: string | null
+          manager_id?: string | null
+          must_change_password?: boolean
+          notes?: string | null
           phone?: string | null
+          status?: string
           updated_at?: string
         }
         Relationships: []

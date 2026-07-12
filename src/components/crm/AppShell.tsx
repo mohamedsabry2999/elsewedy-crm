@@ -63,6 +63,7 @@ const NAV: NavItem[] = [
 
   { to: "/import", label: "استيراد Excel", icon: Upload, group: "الإدارة" },
   { to: "/data-quality", label: "جودة البيانات", icon: ShieldCheck, group: "الإدارة" },
+  { to: "/users", label: "المستخدمين والصلاحيات", icon: UserCog, group: "الإدارة" },
 ];
 
 

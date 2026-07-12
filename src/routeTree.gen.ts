@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as RequestRouteImport } from './routes/request'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArtworkUploadRouteImport } from './routes/artwork-upload'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
@@ -52,6 +53,11 @@ const SignupRoute = SignupRouteImport.update({
 const RequestRoute = RequestRouteImport.update({
   id: '/request',
   path: '/request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -225,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
+  '/register': typeof RegisterRoute
   '/request': typeof RequestRoute
   '/signup': typeof SignupRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
@@ -259,6 +266,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
+  '/register': typeof RegisterRoute
   '/request': typeof RequestRoute
   '/signup': typeof SignupRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
@@ -296,6 +304,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
+  '/register': typeof RegisterRoute
   '/request': typeof RequestRoute
   '/signup': typeof SignupRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
@@ -334,6 +343,7 @@ export interface FileRouteTypes {
     | '/'
     | '/artwork-upload'
     | '/auth'
+    | '/register'
     | '/request'
     | '/signup'
     | '/approvals'
@@ -368,6 +378,7 @@ export interface FileRouteTypes {
   to:
     | '/artwork-upload'
     | '/auth'
+    | '/register'
     | '/request'
     | '/signup'
     | '/approvals'
@@ -404,6 +415,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/artwork-upload'
     | '/auth'
+    | '/register'
     | '/request'
     | '/signup'
     | '/_authenticated/approvals'
@@ -441,6 +453,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ArtworkUploadRoute: typeof ArtworkUploadRoute
   AuthRoute: typeof AuthRoute
+  RegisterRoute: typeof RegisterRoute
   RequestRoute: typeof RequestRoute
   SignupRoute: typeof SignupRoute
   PortalTokenRoute: typeof PortalTokenRoute
@@ -461,6 +474,13 @@ declare module '@tanstack/react-router' {
       path: '/request'
       fullPath: '/request'
       preLoaderRoute: typeof RequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -766,6 +786,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ArtworkUploadRoute: ArtworkUploadRoute,
   AuthRoute: AuthRoute,
+  RegisterRoute: RegisterRoute,
   RequestRoute: RequestRoute,
   SignupRoute: SignupRoute,
   PortalTokenRoute: PortalTokenRoute,

@@ -33,6 +33,7 @@ function PricingRequestsPage() {
   const [open, setOpen] = useState(false);
   const [priceRow, setPriceRow] = useState<AnyRow | null>(null);
   const [status, setStatus] = useState("all");
+  const convertToQuote = useConvertMutations(qc, navigate);
 
   const { data: rows, isLoading } = useQuery<AnyRow[]>({
     queryKey: ["pricing_requests", status],

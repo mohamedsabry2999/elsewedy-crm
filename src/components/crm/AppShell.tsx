@@ -5,6 +5,7 @@ import {
   BarChart3, Megaphone, MessageSquareWarning, Menu, LogOut,
   Package, Factory, Bot, Zap, ExternalLink, Upload, ShieldCheck,
   Calculator, Truck, Wallet, BookOpen, Swords, CalendarDays, Image as ImageIcon,
+  UserCog, User as UserIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";

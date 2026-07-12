@@ -1127,10 +1127,14 @@ export type Database = {
           id: string
           internal_notes: string | null
           material: string | null
+          priced_at: string | null
+          priced_by: string | null
+          pricing_notes: string | null
           pricing_owner: string | null
           printing_type: string | null
           product_type: string | null
           quantity: number | null
+          quotation_id: string | null
           request_number: string | null
           sales_owner: string | null
           sample_required: boolean | null
@@ -1155,10 +1159,14 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           material?: string | null
+          priced_at?: string | null
+          priced_by?: string | null
+          pricing_notes?: string | null
           pricing_owner?: string | null
           printing_type?: string | null
           product_type?: string | null
           quantity?: number | null
+          quotation_id?: string | null
           request_number?: string | null
           sales_owner?: string | null
           sample_required?: boolean | null
@@ -1183,10 +1191,14 @@ export type Database = {
           id?: string
           internal_notes?: string | null
           material?: string | null
+          priced_at?: string | null
+          priced_by?: string | null
+          pricing_notes?: string | null
           pricing_owner?: string | null
           printing_type?: string | null
           product_type?: string | null
           quantity?: number | null
+          quotation_id?: string | null
           request_number?: string | null
           sales_owner?: string | null
           sample_required?: boolean | null
@@ -1210,6 +1222,13 @@ export type Database = {
             columns: ["deal_id"]
             isOneToOne: false
             referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pricing_requests_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
             referencedColumns: ["id"]
           },
         ]

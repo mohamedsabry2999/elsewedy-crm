@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import {
   LEAD_SOURCES, SERVICES, SECTORS, DEAL_STAGES, QUOTATION_STATUSES,
-  ORDER_STATUSES, COMPLAINT_CATEGORIES, DEAL_STAGE_PROBABILITY,
+  ORDER_STATUSES, DEAL_STAGE_PROBABILITY,
   labelOf, formatEGP, formatNumber, formatDate,
 } from "@/lib/crm-constants";
 
@@ -206,7 +206,7 @@ function OrdersReport({ startISO }: { startISO: string | null }) {
   const { data } = useQuery({
     queryKey: ["rep-orders", startISO],
     queryFn: async () => {
-      const q = supabase.from("orders").select("status, total_amount, delivery_date, created_at, delivered_at");
+      const q = supabase.from("orders").select("status, total_amount, delivery_date, created_at, actual_delivery_date");
       if (startISO) q.gte("created_at", startISO);
       const { data } = await q;
       const rows = data ?? [];
@@ -214,7 +214,7 @@ function OrdersReport({ startISO }: { startISO: string | null }) {
       const now = Date.now();
       const delayed = rows.filter((r) => r.status !== "delivered" && r.status !== "cancelled" && r.delivery_date && new Date(r.delivery_date).getTime() < now).length;
       const delivered = rows.filter((r) => r.status === "delivered");
-      const onTime = delivered.filter((r) => r.delivered_at && r.delivery_date && new Date(r.delivered_at).getTime() <= new Date(r.delivery_date).getTime()).length;
+      const onTime = delivered.filter((r) => r.actual_delivery_date && r.delivery_date && new Date(r.actual_delivery_date).getTime() <= new Date(r.delivery_date).getTime()).length;
       const otd = delivered.length > 0 ? Math.round((onTime / delivered.length) * 100) : 0;
       const totalValue = rows.reduce((s, r) => s + Number(r.total_amount || 0), 0);
       return { total: rows.length, delayed, delivered: delivered.length, otd, totalValue, byStatus, rows };
@@ -232,7 +232,7 @@ function OrdersReport({ startISO }: { startISO: string | null }) {
       </div>
       <div className="flex justify-end">
         <Button variant="outline" size="sm" onClick={() => downloadCSV("orders.csv", (data?.rows ?? []).map((r) => ({
-          status: labelOf(ORDER_STATUSES, r.status), total: r.total_amount, delivery: formatDate(r.delivery_date), delivered: formatDate(r.delivered_at), created_at: formatDate(r.created_at),
+          status: labelOf(ORDER_STATUSES, r.status), total: r.total_amount, delivery: formatDate(r.delivery_date), delivered: formatDate(r.actual_delivery_date), created_at: formatDate(r.created_at),
         })))}>
           <Download className="ml-1 h-4 w-4" /> تصدير CSV
         </Button>
@@ -247,11 +247,11 @@ function ComplaintsReport({ startISO }: { startISO: string | null }) {
   const { data } = useQuery({
     queryKey: ["rep-complaints", startISO],
     queryFn: async () => {
-      const q = supabase.from("complaints").select("status, severity, category, created_at, resolved_at");
+      const q = supabase.from("complaints").select("status, severity, complaint_type, created_at, resolved_at");
       if (startISO) q.gte("created_at", startISO);
       const { data } = await q;
       const rows = data ?? [];
-      const byCategory = Array.from(groupBy(rows, (r) => r.category)).map(([k, count]) => ({ name: labelOf(COMPLAINT_CATEGORIES, k), count }));
+      const byCategory = Array.from(groupBy(rows, (r) => r.complaint_type)).map(([k, count]) => ({ name: k, count }));
       const bySeverity = Array.from(groupBy(rows, (r) => r.severity)).map(([k, count]) => ({ name: k, count }));
       const resolved = rows.filter((r) => r.resolved_at);
       const avgHours = resolved.length
@@ -283,14 +283,14 @@ function DeliveriesReport({ startISO }: { startISO: string | null }) {
   const { data } = useQuery({
     queryKey: ["rep-deliveries", startISO],
     queryFn: async () => {
-      const q = supabase.from("deliveries").select("status, delivery_method, scheduled_date, delivered_at, created_at");
+      const q = supabase.from("deliveries").select("status, method, scheduled_at, delivered_at, created_at");
       if (startISO) q.gte("created_at", startISO);
       const { data } = await q;
       const rows = data ?? [];
       const byStatus = Array.from(groupBy(rows, (r) => r.status)).map(([k, count]) => ({ name: k, count }));
-      const byMethod = Array.from(groupBy(rows, (r) => r.delivery_method)).map(([k, count]) => ({ name: k, count }));
-      const delivered = rows.filter((r) => r.delivered_at);
-      const onTime = delivered.filter((r) => r.scheduled_date && new Date(r.delivered_at!).getTime() <= new Date(r.scheduled_date).getTime()).length;
+      const byMethod = Array.from(groupBy(rows, (r) => r.method)).map(([k, count]) => ({ name: k, count }));
+      const delivered = rows.filter((r) => r.actual_delivery_date);
+      const onTime = delivered.filter((r) => r.scheduled_at && new Date(r.actual_delivery_date!).getTime() <= new Date(r.scheduled_at).getTime()).length;
       const otd = delivered.length ? Math.round((onTime / delivered.length) * 100) : 0;
       return { total: rows.length, delivered: delivered.length, otd, byStatus, byMethod };
     },
@@ -316,7 +316,7 @@ function CollectionsReport({ startISO }: { startISO: string | null }) {
   const { data } = useQuery({
     queryKey: ["rep-collections", startISO],
     queryFn: async () => {
-      const q = supabase.from("payments").select("status, total_amount, paid_amount, due_date, payment_date, created_at, payment_method");
+      const q = supabase.from("payments").select("status, total_amount, paid_amount, due_date, created_at, updated_at, method");
       if (startISO) q.gte("created_at", startISO);
       const { data } = await q;
       const rows = data ?? [];
@@ -326,11 +326,11 @@ function CollectionsReport({ startISO }: { startISO: string | null }) {
       const overdue = rows.filter((r) => r.status === "overdue");
       const overdueAmount = overdue.reduce((s, r) => s + Math.max(0, Number(r.total_amount || 0) - Number(r.paid_amount || 0)), 0);
       const byStatus = Array.from(groupBy(rows, (r) => r.status)).map(([k, count]) => ({ name: k, count }));
-      const byMethod = Array.from(groupBy(rows, (r) => r.payment_method)).map(([k, count]) => ({ name: k, count }));
+      const byMethod = Array.from(groupBy(rows, (r) => r.method)).map(([k, count]) => ({ name: k, count }));
       // Trend by day
       const trendMap = new Map<string, number>();
-      rows.filter((r) => r.payment_date && Number(r.paid_amount) > 0).forEach((r) => {
-        const d = r.payment_date!.slice(0, 10);
+      rows.filter((r) => r.updated_at && Number(r.paid_amount) > 0).forEach((r) => {
+        const d = r.updated_at!.slice(0, 10);
         trendMap.set(d, (trendMap.get(d) ?? 0) + Number(r.paid_amount));
       });
       const trend = Array.from(trendMap.entries()).sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value }));
@@ -377,7 +377,7 @@ function MarketingReport({ startISO }: { startISO: string | null }) {
   const { data } = useQuery({
     queryKey: ["rep-marketing", startISO],
     queryFn: async () => {
-      const q = supabase.from("campaigns").select("name, channel, budget, spent, revenue, leads_generated, qualified_leads, status, created_at");
+      const q = supabase.from("campaigns").select("name, platform, budget, spent, revenue, leads_generated, deals_closed, status, created_at");
       if (startISO) q.gte("created_at", startISO);
       const { data } = await q;
       const rows = data ?? [];
@@ -385,11 +385,11 @@ function MarketingReport({ startISO }: { startISO: string | null }) {
       const totalSpent = rows.reduce((s, r) => s + Number(r.spent || 0), 0);
       const totalRevenue = rows.reduce((s, r) => s + Number(r.revenue || 0), 0);
       const totalLeads = rows.reduce((s, r) => s + Number(r.leads_generated || 0), 0);
-      const qualifiedLeads = rows.reduce((s, r) => s + Number(r.qualified_leads || 0), 0);
+      const qualifiedLeads = rows.reduce((s, r) => s + Number(r.deals_closed || 0), 0);
       const roi = totalSpent > 0 ? Math.round(((totalRevenue - totalSpent) / totalSpent) * 100) : 0;
       const cac = qualifiedLeads > 0 ? totalSpent / qualifiedLeads : 0;
       const cpql = qualifiedLeads > 0 ? totalSpent / qualifiedLeads : 0;
-      const byChannel = Array.from(groupBy(rows, (r) => r.channel)).map(([k, count]) => ({ name: k, count }));
+      const byChannel = Array.from(groupBy(rows, (r) => r.platform)).map(([k, count]) => ({ name: k, count }));
       return { totalBudget, totalSpent, totalRevenue, totalLeads, qualifiedLeads, roi, cac, cpql, byChannel, rows };
     },
   });
@@ -406,8 +406,8 @@ function MarketingReport({ startISO }: { startISO: string | null }) {
       </div>
       <div className="flex justify-end">
         <Button variant="outline" size="sm" onClick={() => downloadCSV("campaigns.csv", (data?.rows ?? []).map((r) => ({
-          name: r.name, channel: r.channel, budget: r.budget, spent: r.spent, revenue: r.revenue,
-          leads: r.leads_generated, qualified: r.qualified_leads, status: r.status,
+          name: r.name, channel: r.platform, budget: r.budget, spent: r.spent, revenue: r.revenue,
+          leads: r.leads_generated, qualified: r.deals_closed, status: r.status,
         })))}>
           <Download className="ml-1 h-4 w-4" /> تصدير CSV
         </Button>

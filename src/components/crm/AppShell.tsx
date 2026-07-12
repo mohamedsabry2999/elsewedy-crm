@@ -1,38 +1,17 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState, type ReactNode } from "react";
 import {
-  LayoutDashboard,
-  Users,
-  Building2,
-  KanbanSquare,
-  CheckSquare,
-  FileText,
-  BarChart3,
-  Megaphone,
-  MessageSquareWarning,
-  Menu,
-  LogOut,
-  Search,
-  
-  Package,
-  Factory,
-  Bot,
-  Zap,
-  ExternalLink,
-  Upload,
-  ShieldCheck,
+  LayoutDashboard, Users, Building2, KanbanSquare, CheckSquare, FileText,
+  BarChart3, Megaphone, MessageSquareWarning, Menu, LogOut,
+  Package, Factory, Bot, Zap, ExternalLink, Upload, ShieldCheck,
+  Calculator, Truck, Wallet, BookOpen, Swords, CalendarDays,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
+  DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
@@ -47,19 +26,35 @@ type NavItem = { to: string; label: string; icon: React.ComponentType<{ classNam
 
 const NAV: NavItem[] = [
   { to: "/", label: "لوحة التحكم", icon: LayoutDashboard, group: "الرئيسية" },
+
   { to: "/leads", label: "العملاء المحتملون", icon: Users, group: "المبيعات" },
   { to: "/clients", label: "العملاء", icon: Building2, group: "المبيعات" },
   { to: "/pipeline", label: "خط أنابيب المبيعات", icon: KanbanSquare, group: "المبيعات" },
   { to: "/tasks", label: "المهام والمتابعات", icon: CheckSquare, group: "المبيعات" },
-  { to: "/quotations", label: "عروض الأسعار", icon: FileText, group: "المبيعات" },
+  { to: "/meetings", label: "تقارير الاجتماعات", icon: CalendarDays, group: "المبيعات" },
+  { to: "/samples", label: "العينات", icon: Package, group: "المبيعات" },
+
+  { to: "/pricing-requests", label: "طلبات التسعير", icon: Calculator, group: "التسعير والعروض" },
+  { to: "/quotations", label: "عروض الأسعار", icon: FileText, group: "التسعير والعروض" },
+  { to: "/approvals", label: "الاعتمادات", icon: ShieldCheck, group: "التسعير والعروض" },
+
   { to: "/orders", label: "الطلبات", icon: Package, group: "التشغيل" },
   { to: "/production", label: "تتبع الإنتاج", icon: Factory, group: "التشغيل" },
+  { to: "/deliveries", label: "التسليمات", icon: Truck, group: "التشغيل" },
   { to: "/complaints", label: "الشكاوى", icon: MessageSquareWarning, group: "التشغيل" },
+
+  { to: "/payments", label: "التحصيلات", icon: Wallet, group: "المالية" },
+
   { to: "/campaigns", label: "الحملات التسويقية", icon: Megaphone, group: "التسويق" },
+
+  { to: "/competitors", label: "المنافسون", icon: Swords, group: "الذكاء" },
   { to: "/automation", label: "الأتمتة", icon: Zap, group: "الذكاء" },
   { to: "/assistant", label: "المساعد الذكي", icon: Bot, group: "الذكاء" },
+  { to: "/knowledge", label: "قاعدة المعرفة", icon: BookOpen, group: "الذكاء" },
+
   { to: "/reports", label: "التقارير", icon: BarChart3, group: "التحليلات" },
   { to: "/portal-links", label: "بوابة العميل", icon: ExternalLink, group: "التحليلات" },
+
   { to: "/import", label: "استيراد Excel", icon: Upload, group: "الإدارة" },
   { to: "/data-quality", label: "جودة البيانات", icon: ShieldCheck, group: "الإدارة" },
 ];
@@ -151,8 +146,8 @@ function SidebarInner() {
           <img src={logoAsset.url} alt="Elsewedy" className="h-8 w-auto" />
         </div>
         <div className="leading-tight">
-          <p className="text-sm font-bold text-sidebar-primary-foreground">Elsewedy CRM</p>
-          <p className="text-[10px] text-sidebar-foreground/60">Growth Platform</p>
+          <p className="text-sm font-bold text-sidebar-primary-foreground">Elsewedy Ops OS</p>
+          <p className="text-[10px] text-sidebar-foreground/60">Commercial & Operations</p>
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto p-3 space-y-4">
@@ -187,7 +182,7 @@ function SidebarInner() {
       </nav>
 
       <div className="p-4 border-t border-sidebar-border text-[11px] text-sidebar-foreground/50">
-        الإصدار 1.0 — المرحلة الأولى
+        الإصدار 2.0 — النظام التشغيلي التجاري
       </div>
     </>
   );

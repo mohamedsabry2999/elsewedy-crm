@@ -146,8 +146,8 @@ function SidebarInner() {
           <img src={logoAsset.url} alt="Elsewedy" className="h-8 w-auto" />
         </div>
         <div className="leading-tight">
-          <p className="text-sm font-bold text-sidebar-primary-foreground">Elsewedy CRM</p>
-          <p className="text-[10px] text-sidebar-foreground/60">Growth Platform</p>
+          <p className="text-sm font-bold text-sidebar-primary-foreground">Elsewedy Ops OS</p>
+          <p className="text-[10px] text-sidebar-foreground/60">Commercial & Operations</p>
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto p-3 space-y-4">

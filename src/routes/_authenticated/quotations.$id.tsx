@@ -15,6 +15,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { QUOTATION_STATUSES, formatEGP, labelOf } from "@/lib/crm-constants";
 import { printQuotationPDF } from "@/lib/quotation-pdf";
+import { ArtworkUploader } from "@/components/artwork/ArtworkUploader";
+import { ArtworkList } from "@/components/artwork/ArtworkList";
+import { useRoles } from "@/hooks/useRoles";
+import { can } from "@/lib/permissions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/quotations/$id")({

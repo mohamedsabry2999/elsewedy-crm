@@ -247,3 +247,95 @@ export const AUTOMATION_ACTIONS = [
   { value: "send_email", label: "إرسال بريد إلكتروني" },
 ] as const;
 
+// ============ Commercial & Operations OS ============
+export const PRICING_REQUEST_STATUSES = [
+  { value: "draft", label: "مسودة" },
+  { value: "submitted", label: "مُرسل للتسعير" },
+  { value: "in_review", label: "قيد المراجعة" },
+  { value: "priced", label: "تم التسعير" },
+  { value: "approved", label: "معتمد" },
+  { value: "rejected", label: "مرفوض" },
+] as const;
+
+export const URGENCY_LEVELS = [
+  { value: "low", label: "منخفضة" },
+  { value: "normal", label: "عادية" },
+  { value: "high", label: "عاجل" },
+  { value: "critical", label: "طارئ" },
+] as const;
+
+export const DELIVERY_METHODS = [
+  { value: "own_fleet", label: "أسطول الشركة" },
+  { value: "courier", label: "شركة شحن" },
+  { value: "pickup", label: "استلام من المصنع" },
+  { value: "client_transport", label: "نقل العميل" },
+] as const;
+
+export const DELIVERY_STATUSES = [
+  { value: "pending", label: "بانتظار الجدولة" },
+  { value: "scheduled", label: "مُجدولة" },
+  { value: "in_transit", label: "في الطريق" },
+  { value: "delivered", label: "تم التسليم" },
+  { value: "failed", label: "فشل التسليم" },
+  { value: "returned", label: "مرتجع" },
+] as const;
+
+export const PAYMENT_METHODS = [
+  { value: "cash", label: "نقدي" },
+  { value: "bank_transfer", label: "تحويل بنكي" },
+  { value: "check", label: "شيك" },
+  { value: "credit", label: "آجل" },
+  { value: "online", label: "دفع إلكتروني" },
+] as const;
+
+export const PAYMENT_STATUSES = [
+  { value: "unpaid", label: "غير مدفوع" },
+  { value: "partial", label: "دفع جزئي" },
+  { value: "paid", label: "مدفوع بالكامل" },
+  { value: "overdue", label: "متأخر" },
+  { value: "cancelled", label: "ملغى" },
+] as const;
+
+export const SAMPLE_STATUSES = [
+  { value: "requested", label: "مطلوبة" },
+  { value: "in_production", label: "قيد الإنتاج" },
+  { value: "ready", label: "جاهزة" },
+  { value: "delivered", label: "تم التسليم" },
+  { value: "approved", label: "معتمدة من العميل" },
+  { value: "rejected", label: "مرفوضة" },
+] as const;
+
+export const APPROVAL_TYPES = [
+  { value: "discount", label: "خصم استثنائي" },
+  { value: "credit_limit", label: "زيادة حد ائتماني" },
+  { value: "rush_order", label: "طلب عاجل" },
+  { value: "price_override", label: "تجاوز سعر" },
+  { value: "refund", label: "استرداد" },
+  { value: "other", label: "أخرى" },
+] as const;
+
+export const APPROVAL_STATUSES = [
+  { value: "pending", label: "بانتظار الاعتماد" },
+  { value: "approved", label: "معتمد" },
+  { value: "rejected", label: "مرفوض" },
+  { value: "cancelled", label: "ملغى" },
+] as const;
+
+export const MEETING_TYPES = [
+  { value: "first_visit", label: "زيارة أولى" },
+  { value: "followup", label: "متابعة" },
+  { value: "presentation", label: "عرض تقديمي" },
+  { value: "negotiation", label: "تفاوض" },
+  { value: "closing", label: "إغلاق صفقة" },
+  { value: "aftersales", label: "خدمة ما بعد البيع" },
+] as const;
+
+export const KNOWLEDGE_CATEGORIES = [
+  { value: "products", label: "المنتجات والخدمات" },
+  { value: "pricing", label: "التسعير" },
+  { value: "objections", label: "الردود على الاعتراضات" },
+  { value: "process", label: "الإجراءات" },
+  { value: "technical", label: "المواصفات الفنية" },
+  { value: "policies", label: "السياسات" },
+] as const;
+

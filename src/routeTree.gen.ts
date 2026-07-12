@@ -15,21 +15,28 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as PortalTokenRouteImport } from './routes/portal.$token'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
+import { Route as AuthenticatedSamplesRouteImport } from './routes/_authenticated/samples'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedQuotationsRouteImport } from './routes/_authenticated/quotations'
 import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated/production'
 import { Route as AuthenticatedPricingRequestsRouteImport } from './routes/_authenticated/pricing-requests'
 import { Route as AuthenticatedPortalLinksRouteImport } from './routes/_authenticated/portal-links'
 import { Route as AuthenticatedPipelineRouteImport } from './routes/_authenticated/pipeline'
+import { Route as AuthenticatedPaymentsRouteImport } from './routes/_authenticated/payments'
 import { Route as AuthenticatedOrdersRouteImport } from './routes/_authenticated/orders'
+import { Route as AuthenticatedMeetingsRouteImport } from './routes/_authenticated/meetings'
 import { Route as AuthenticatedLeadsRouteImport } from './routes/_authenticated/leads'
+import { Route as AuthenticatedKnowledgeRouteImport } from './routes/_authenticated/knowledge'
 import { Route as AuthenticatedImportRouteImport } from './routes/_authenticated/import'
+import { Route as AuthenticatedDeliveriesRouteImport } from './routes/_authenticated/deliveries'
 import { Route as AuthenticatedDataQualityRouteImport } from './routes/_authenticated/data-quality'
 import { Route as AuthenticatedComplaintsRouteImport } from './routes/_authenticated/complaints'
+import { Route as AuthenticatedCompetitorsRouteImport } from './routes/_authenticated/competitors'
 import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticated/clients'
 import { Route as AuthenticatedCampaignsRouteImport } from './routes/_authenticated/campaigns'
 import { Route as AuthenticatedAutomationRouteImport } from './routes/_authenticated/automation'
 import { Route as AuthenticatedAssistantRouteImport } from './routes/_authenticated/assistant'
+import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated/approvals'
 import { Route as ApiPublicLeadRequestRouteImport } from './routes/api/public/lead-request'
 import { Route as AuthenticatedQuotationsIdRouteImport } from './routes/_authenticated/quotations.$id'
 
@@ -60,6 +67,11 @@ const PortalTokenRoute = PortalTokenRouteImport.update({
 const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedSamplesRoute = AuthenticatedSamplesRouteImport.update({
+  id: '/samples',
+  path: '/samples',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
@@ -94,9 +106,19 @@ const AuthenticatedPipelineRoute = AuthenticatedPipelineRouteImport.update({
   path: '/pipeline',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedPaymentsRoute = AuthenticatedPaymentsRouteImport.update({
+  id: '/payments',
+  path: '/payments',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedOrdersRoute = AuthenticatedOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedMeetingsRoute = AuthenticatedMeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedLeadsRoute = AuthenticatedLeadsRouteImport.update({
@@ -104,9 +126,19 @@ const AuthenticatedLeadsRoute = AuthenticatedLeadsRouteImport.update({
   path: '/leads',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedKnowledgeRoute = AuthenticatedKnowledgeRouteImport.update({
+  id: '/knowledge',
+  path: '/knowledge',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedImportRoute = AuthenticatedImportRouteImport.update({
   id: '/import',
   path: '/import',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDeliveriesRoute = AuthenticatedDeliveriesRouteImport.update({
+  id: '/deliveries',
+  path: '/deliveries',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDataQualityRoute =
@@ -120,6 +152,12 @@ const AuthenticatedComplaintsRoute = AuthenticatedComplaintsRouteImport.update({
   path: '/complaints',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCompetitorsRoute =
+  AuthenticatedCompetitorsRouteImport.update({
+    id: '/competitors',
+    path: '/competitors',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedClientsRoute = AuthenticatedClientsRouteImport.update({
   id: '/clients',
   path: '/clients',
@@ -140,6 +178,11 @@ const AuthenticatedAssistantRoute = AuthenticatedAssistantRouteImport.update({
   path: '/assistant',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiPublicLeadRequestRoute = ApiPublicLeadRequestRouteImport.update({
   id: '/api/public/lead-request',
   path: '/api/public/lead-request',
@@ -156,21 +199,28 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
+  '/approvals': typeof AuthenticatedApprovalsRoute
   '/assistant': typeof AuthenticatedAssistantRoute
   '/automation': typeof AuthenticatedAutomationRoute
   '/campaigns': typeof AuthenticatedCampaignsRoute
   '/clients': typeof AuthenticatedClientsRoute
+  '/competitors': typeof AuthenticatedCompetitorsRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/data-quality': typeof AuthenticatedDataQualityRoute
+  '/deliveries': typeof AuthenticatedDeliveriesRoute
   '/import': typeof AuthenticatedImportRoute
+  '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/leads': typeof AuthenticatedLeadsRoute
+  '/meetings': typeof AuthenticatedMeetingsRoute
   '/orders': typeof AuthenticatedOrdersRoute
+  '/payments': typeof AuthenticatedPaymentsRoute
   '/pipeline': typeof AuthenticatedPipelineRoute
   '/portal-links': typeof AuthenticatedPortalLinksRoute
   '/pricing-requests': typeof AuthenticatedPricingRequestsRoute
   '/production': typeof AuthenticatedProductionRoute
   '/quotations': typeof AuthenticatedQuotationsRouteWithChildren
   '/reports': typeof AuthenticatedReportsRoute
+  '/samples': typeof AuthenticatedSamplesRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/portal/$token': typeof PortalTokenRoute
   '/quotations/$id': typeof AuthenticatedQuotationsIdRoute
@@ -179,21 +229,28 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
+  '/approvals': typeof AuthenticatedApprovalsRoute
   '/assistant': typeof AuthenticatedAssistantRoute
   '/automation': typeof AuthenticatedAutomationRoute
   '/campaigns': typeof AuthenticatedCampaignsRoute
   '/clients': typeof AuthenticatedClientsRoute
+  '/competitors': typeof AuthenticatedCompetitorsRoute
   '/complaints': typeof AuthenticatedComplaintsRoute
   '/data-quality': typeof AuthenticatedDataQualityRoute
+  '/deliveries': typeof AuthenticatedDeliveriesRoute
   '/import': typeof AuthenticatedImportRoute
+  '/knowledge': typeof AuthenticatedKnowledgeRoute
   '/leads': typeof AuthenticatedLeadsRoute
+  '/meetings': typeof AuthenticatedMeetingsRoute
   '/orders': typeof AuthenticatedOrdersRoute
+  '/payments': typeof AuthenticatedPaymentsRoute
   '/pipeline': typeof AuthenticatedPipelineRoute
   '/portal-links': typeof AuthenticatedPortalLinksRoute
   '/pricing-requests': typeof AuthenticatedPricingRequestsRoute
   '/production': typeof AuthenticatedProductionRoute
   '/quotations': typeof AuthenticatedQuotationsRouteWithChildren
   '/reports': typeof AuthenticatedReportsRoute
+  '/samples': typeof AuthenticatedSamplesRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/portal/$token': typeof PortalTokenRoute
   '/': typeof AuthenticatedIndexRoute
@@ -205,21 +262,28 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
+  '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
   '/_authenticated/assistant': typeof AuthenticatedAssistantRoute
   '/_authenticated/automation': typeof AuthenticatedAutomationRoute
   '/_authenticated/campaigns': typeof AuthenticatedCampaignsRoute
   '/_authenticated/clients': typeof AuthenticatedClientsRoute
+  '/_authenticated/competitors': typeof AuthenticatedCompetitorsRoute
   '/_authenticated/complaints': typeof AuthenticatedComplaintsRoute
   '/_authenticated/data-quality': typeof AuthenticatedDataQualityRoute
+  '/_authenticated/deliveries': typeof AuthenticatedDeliveriesRoute
   '/_authenticated/import': typeof AuthenticatedImportRoute
+  '/_authenticated/knowledge': typeof AuthenticatedKnowledgeRoute
   '/_authenticated/leads': typeof AuthenticatedLeadsRoute
+  '/_authenticated/meetings': typeof AuthenticatedMeetingsRoute
   '/_authenticated/orders': typeof AuthenticatedOrdersRoute
+  '/_authenticated/payments': typeof AuthenticatedPaymentsRoute
   '/_authenticated/pipeline': typeof AuthenticatedPipelineRoute
   '/_authenticated/portal-links': typeof AuthenticatedPortalLinksRoute
   '/_authenticated/pricing-requests': typeof AuthenticatedPricingRequestsRoute
   '/_authenticated/production': typeof AuthenticatedProductionRoute
   '/_authenticated/quotations': typeof AuthenticatedQuotationsRouteWithChildren
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
+  '/_authenticated/samples': typeof AuthenticatedSamplesRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
   '/portal/$token': typeof PortalTokenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
@@ -232,21 +296,28 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/request'
+    | '/approvals'
     | '/assistant'
     | '/automation'
     | '/campaigns'
     | '/clients'
+    | '/competitors'
     | '/complaints'
     | '/data-quality'
+    | '/deliveries'
     | '/import'
+    | '/knowledge'
     | '/leads'
+    | '/meetings'
     | '/orders'
+    | '/payments'
     | '/pipeline'
     | '/portal-links'
     | '/pricing-requests'
     | '/production'
     | '/quotations'
     | '/reports'
+    | '/samples'
     | '/tasks'
     | '/portal/$token'
     | '/quotations/$id'
@@ -255,21 +326,28 @@ export interface FileRouteTypes {
   to:
     | '/auth'
     | '/request'
+    | '/approvals'
     | '/assistant'
     | '/automation'
     | '/campaigns'
     | '/clients'
+    | '/competitors'
     | '/complaints'
     | '/data-quality'
+    | '/deliveries'
     | '/import'
+    | '/knowledge'
     | '/leads'
+    | '/meetings'
     | '/orders'
+    | '/payments'
     | '/pipeline'
     | '/portal-links'
     | '/pricing-requests'
     | '/production'
     | '/quotations'
     | '/reports'
+    | '/samples'
     | '/tasks'
     | '/portal/$token'
     | '/'
@@ -280,21 +358,28 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/request'
+    | '/_authenticated/approvals'
     | '/_authenticated/assistant'
     | '/_authenticated/automation'
     | '/_authenticated/campaigns'
     | '/_authenticated/clients'
+    | '/_authenticated/competitors'
     | '/_authenticated/complaints'
     | '/_authenticated/data-quality'
+    | '/_authenticated/deliveries'
     | '/_authenticated/import'
+    | '/_authenticated/knowledge'
     | '/_authenticated/leads'
+    | '/_authenticated/meetings'
     | '/_authenticated/orders'
+    | '/_authenticated/payments'
     | '/_authenticated/pipeline'
     | '/_authenticated/portal-links'
     | '/_authenticated/pricing-requests'
     | '/_authenticated/production'
     | '/_authenticated/quotations'
     | '/_authenticated/reports'
+    | '/_authenticated/samples'
     | '/_authenticated/tasks'
     | '/portal/$token'
     | '/_authenticated/'
@@ -354,6 +439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTasksRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/samples': {
+      id: '/_authenticated/samples'
+      path: '/samples'
+      fullPath: '/samples'
+      preLoaderRoute: typeof AuthenticatedSamplesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/reports': {
       id: '/_authenticated/reports'
       path: '/reports'
@@ -396,11 +488,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPipelineRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/payments': {
+      id: '/_authenticated/payments'
+      path: '/payments'
+      fullPath: '/payments'
+      preLoaderRoute: typeof AuthenticatedPaymentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/orders': {
       id: '/_authenticated/orders'
       path: '/orders'
       fullPath: '/orders'
       preLoaderRoute: typeof AuthenticatedOrdersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/meetings': {
+      id: '/_authenticated/meetings'
+      path: '/meetings'
+      fullPath: '/meetings'
+      preLoaderRoute: typeof AuthenticatedMeetingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/leads': {
@@ -410,11 +516,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLeadsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/knowledge': {
+      id: '/_authenticated/knowledge'
+      path: '/knowledge'
+      fullPath: '/knowledge'
+      preLoaderRoute: typeof AuthenticatedKnowledgeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/import': {
       id: '/_authenticated/import'
       path: '/import'
       fullPath: '/import'
       preLoaderRoute: typeof AuthenticatedImportRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/deliveries': {
+      id: '/_authenticated/deliveries'
+      path: '/deliveries'
+      fullPath: '/deliveries'
+      preLoaderRoute: typeof AuthenticatedDeliveriesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/data-quality': {
@@ -429,6 +549,13 @@ declare module '@tanstack/react-router' {
       path: '/complaints'
       fullPath: '/complaints'
       preLoaderRoute: typeof AuthenticatedComplaintsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/competitors': {
+      id: '/_authenticated/competitors'
+      path: '/competitors'
+      fullPath: '/competitors'
+      preLoaderRoute: typeof AuthenticatedCompetitorsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/clients': {
@@ -457,6 +584,13 @@ declare module '@tanstack/react-router' {
       path: '/assistant'
       fullPath: '/assistant'
       preLoaderRoute: typeof AuthenticatedAssistantRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/approvals': {
+      id: '/_authenticated/approvals'
+      path: '/approvals'
+      fullPath: '/approvals'
+      preLoaderRoute: typeof AuthenticatedApprovalsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/api/public/lead-request': {
@@ -491,41 +625,55 @@ const AuthenticatedQuotationsRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
   AuthenticatedAssistantRoute: typeof AuthenticatedAssistantRoute
   AuthenticatedAutomationRoute: typeof AuthenticatedAutomationRoute
   AuthenticatedCampaignsRoute: typeof AuthenticatedCampaignsRoute
   AuthenticatedClientsRoute: typeof AuthenticatedClientsRoute
+  AuthenticatedCompetitorsRoute: typeof AuthenticatedCompetitorsRoute
   AuthenticatedComplaintsRoute: typeof AuthenticatedComplaintsRoute
   AuthenticatedDataQualityRoute: typeof AuthenticatedDataQualityRoute
+  AuthenticatedDeliveriesRoute: typeof AuthenticatedDeliveriesRoute
   AuthenticatedImportRoute: typeof AuthenticatedImportRoute
+  AuthenticatedKnowledgeRoute: typeof AuthenticatedKnowledgeRoute
   AuthenticatedLeadsRoute: typeof AuthenticatedLeadsRoute
+  AuthenticatedMeetingsRoute: typeof AuthenticatedMeetingsRoute
   AuthenticatedOrdersRoute: typeof AuthenticatedOrdersRoute
+  AuthenticatedPaymentsRoute: typeof AuthenticatedPaymentsRoute
   AuthenticatedPipelineRoute: typeof AuthenticatedPipelineRoute
   AuthenticatedPortalLinksRoute: typeof AuthenticatedPortalLinksRoute
   AuthenticatedPricingRequestsRoute: typeof AuthenticatedPricingRequestsRoute
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRoute
   AuthenticatedQuotationsRoute: typeof AuthenticatedQuotationsRouteWithChildren
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
+  AuthenticatedSamplesRoute: typeof AuthenticatedSamplesRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
   AuthenticatedAssistantRoute: AuthenticatedAssistantRoute,
   AuthenticatedAutomationRoute: AuthenticatedAutomationRoute,
   AuthenticatedCampaignsRoute: AuthenticatedCampaignsRoute,
   AuthenticatedClientsRoute: AuthenticatedClientsRoute,
+  AuthenticatedCompetitorsRoute: AuthenticatedCompetitorsRoute,
   AuthenticatedComplaintsRoute: AuthenticatedComplaintsRoute,
   AuthenticatedDataQualityRoute: AuthenticatedDataQualityRoute,
+  AuthenticatedDeliveriesRoute: AuthenticatedDeliveriesRoute,
   AuthenticatedImportRoute: AuthenticatedImportRoute,
+  AuthenticatedKnowledgeRoute: AuthenticatedKnowledgeRoute,
   AuthenticatedLeadsRoute: AuthenticatedLeadsRoute,
+  AuthenticatedMeetingsRoute: AuthenticatedMeetingsRoute,
   AuthenticatedOrdersRoute: AuthenticatedOrdersRoute,
+  AuthenticatedPaymentsRoute: AuthenticatedPaymentsRoute,
   AuthenticatedPipelineRoute: AuthenticatedPipelineRoute,
   AuthenticatedPortalLinksRoute: AuthenticatedPortalLinksRoute,
   AuthenticatedPricingRequestsRoute: AuthenticatedPricingRequestsRoute,
   AuthenticatedProductionRoute: AuthenticatedProductionRoute,
   AuthenticatedQuotationsRoute: AuthenticatedQuotationsRouteWithChildren,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
+  AuthenticatedSamplesRoute: AuthenticatedSamplesRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }

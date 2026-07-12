@@ -29,7 +29,9 @@ export const Route = createFileRoute("/_authenticated/pricing-requests")({
 
 function PricingRequestsPage() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [priceRow, setPriceRow] = useState<AnyRow | null>(null);
   const [status, setStatus] = useState("all");
 
   const { data: rows, isLoading } = useQuery<AnyRow[]>({

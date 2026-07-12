@@ -228,6 +228,22 @@ function QuotationDetailPage() {
             <Button onClick={() => save.mutate()} disabled={save.isPending}>
               <Save className="h-4 w-4 ml-1" /> حفظ
             </Button>
+            {quote.status === "draft" && (
+              <Button variant="secondary" onClick={() => transition.mutate("sent")} disabled={transition.isPending}>
+                <Send className="h-4 w-4 ml-1" /> إرسال للعميل
+              </Button>
+            )}
+            {quote.status === "sent" && (
+              <Button className="bg-success text-success-foreground hover:bg-success/90"
+                onClick={() => transition.mutate("approved")} disabled={transition.isPending}>
+                <CheckCircle2 className="h-4 w-4 ml-1" /> اعتماد
+              </Button>
+            )}
+            {quote.status === "approved" && (
+              <Button onClick={() => toOrder.mutate()} disabled={toOrder.isPending}>
+                <Package className="h-4 w-4 ml-1" /> تحويل إلى طلب إنتاج
+              </Button>
+            )}
           </div>
         }
       />

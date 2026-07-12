@@ -173,6 +173,8 @@ const DEFAULT_CAPS: Record<ModuleKey, CapMap> = {
     delete: ["sales_manager"],
     approve: ["sales_manager","production","quality_control"],
   },
+  users: { view: [] },
+  profile: { view: MODULE_VIEW.profile },
 };
 
 

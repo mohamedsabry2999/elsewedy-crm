@@ -348,6 +348,33 @@ function QuotationDetailPage() {
           </div>
         </Card>
       </div>
+
+      <ArtworkSection quotationId={quote.id} clientId={quote.client_id ?? null} />
+    </div>
+  );
+}
+
+function ArtworkSection({ quotationId, clientId }: { quotationId: string; clientId: string | null }) {
+  const { roles } = useRoles();
+  const [refreshKey, setRefreshKey] = useState(0);
+  return (
+    <div className="grid gap-4 lg:grid-cols-2 mt-4">
+      <Card className="p-4">
+        <h3 className="font-semibold mb-3">رفع ملفات التصميم</h3>
+        <ArtworkUploader
+          assoc={{ quotation_id: quotationId, client_id: clientId ?? undefined }}
+          onUploaded={() => setRefreshKey((k) => k + 1)}
+        />
+      </Card>
+      <Card className="p-4">
+        <h3 className="font-semibold mb-3">الملفات المرفوعة</h3>
+        <ArtworkList
+          filter={{ quotation_id: quotationId }}
+          canReview={can(roles, "artwork", "approve")}
+          canDelete={can(roles, "artwork", "delete")}
+          refreshKey={refreshKey}
+        />
+      </Card>
     </div>
   );
 }

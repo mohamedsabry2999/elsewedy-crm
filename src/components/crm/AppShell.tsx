@@ -159,14 +159,14 @@ function SidebarInner() {
         </div>
       </div>
       <nav className="flex-1 overflow-y-auto p-3 space-y-4">
-        {Array.from(new Set(NAV.map((n) => n.group ?? ""))).map((group) => (
+        {Array.from(new Set(visibleNav.map((n) => n.group ?? ""))).map((group) => (
           <div key={group} className="space-y-1">
             {group && (
               <p className="px-3 pt-1 pb-1 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/40">
                 {group}
               </p>
             )}
-            {NAV.filter((n) => (n.group ?? "") === group).map((item) => {
+            {visibleNav.filter((n) => (n.group ?? "") === group).map((item) => {
               const active = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
               const Icon = item.icon;
               return (

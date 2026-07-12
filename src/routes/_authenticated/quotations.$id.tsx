@@ -1,7 +1,9 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowRight, Plus, Trash2, Printer, Save } from "lucide-react";
+import { ArrowRight, Plus, Trash2, Printer, Save, Send, CheckCircle2, Package } from "lucide-react";
+import { logActivity, notifyRole } from "@/lib/journey";
+import { PRODUCTION_STAGE_TEMPLATE } from "@/lib/crm-constants";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/crm/PageHeader";
 import { Card } from "@/components/ui/card";

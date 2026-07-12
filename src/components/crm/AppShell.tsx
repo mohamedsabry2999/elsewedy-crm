@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Building2, KanbanSquare, CheckSquare, FileText,
   BarChart3, Megaphone, MessageSquareWarning, Menu, LogOut,
   Package, Factory, Bot, Zap, ExternalLink, Upload, ShieldCheck,
-  Calculator, Truck, Wallet, BookOpen, Swords, CalendarDays,
+  Calculator, Truck, Wallet, BookOpen, Swords, CalendarDays, Image as ImageIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";

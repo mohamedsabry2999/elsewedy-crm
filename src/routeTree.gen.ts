@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as RequestRouteImport } from './routes/request'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArtworkUploadRouteImport } from './routes/artwork-upload'
@@ -43,6 +44,11 @@ import { Route as ApiPublicLeadRequestRouteImport } from './routes/api/public/le
 import { Route as AuthenticatedQuotationsIdRouteImport } from './routes/_authenticated/quotations.$id'
 import { Route as AuthenticatedArtworkPendingRouteImport } from './routes/_authenticated/artwork.pending'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RequestRoute = RequestRouteImport.update({
   id: '/request',
   path: '/request',
@@ -220,6 +226,7 @@ export interface FileRoutesByFullPath {
   '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
+  '/signup': typeof SignupRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
   '/artwork': typeof AuthenticatedArtworkRouteWithChildren
   '/assistant': typeof AuthenticatedAssistantRoute
@@ -253,6 +260,7 @@ export interface FileRoutesByTo {
   '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
+  '/signup': typeof SignupRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
   '/artwork': typeof AuthenticatedArtworkRouteWithChildren
   '/assistant': typeof AuthenticatedAssistantRoute
@@ -289,6 +297,7 @@ export interface FileRoutesById {
   '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
+  '/signup': typeof SignupRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
   '/_authenticated/artwork': typeof AuthenticatedArtworkRouteWithChildren
   '/_authenticated/assistant': typeof AuthenticatedAssistantRoute
@@ -326,6 +335,7 @@ export interface FileRouteTypes {
     | '/artwork-upload'
     | '/auth'
     | '/request'
+    | '/signup'
     | '/approvals'
     | '/artwork'
     | '/assistant'
@@ -359,6 +369,7 @@ export interface FileRouteTypes {
     | '/artwork-upload'
     | '/auth'
     | '/request'
+    | '/signup'
     | '/approvals'
     | '/artwork'
     | '/assistant'
@@ -394,6 +405,7 @@ export interface FileRouteTypes {
     | '/artwork-upload'
     | '/auth'
     | '/request'
+    | '/signup'
     | '/_authenticated/approvals'
     | '/_authenticated/artwork'
     | '/_authenticated/assistant'
@@ -430,12 +442,20 @@ export interface RootRouteChildren {
   ArtworkUploadRoute: typeof ArtworkUploadRoute
   AuthRoute: typeof AuthRoute
   RequestRoute: typeof RequestRoute
+  SignupRoute: typeof SignupRoute
   PortalTokenRoute: typeof PortalTokenRoute
   ApiPublicLeadRequestRoute: typeof ApiPublicLeadRequestRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/request': {
       id: '/request'
       path: '/request'
@@ -747,6 +767,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArtworkUploadRoute: ArtworkUploadRoute,
   AuthRoute: AuthRoute,
   RequestRoute: RequestRoute,
+  SignupRoute: SignupRoute,
   PortalTokenRoute: PortalTokenRoute,
   ApiPublicLeadRequestRoute: ApiPublicLeadRequestRoute,
 }

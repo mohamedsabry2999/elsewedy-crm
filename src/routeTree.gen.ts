@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RequestRouteImport } from './routes/request'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ArtworkUploadRouteImport } from './routes/artwork-upload'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as PortalTokenRouteImport } from './routes/portal.$token'
@@ -48,6 +49,11 @@ const RequestRoute = RequestRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtworkUploadRoute = ArtworkUploadRouteImport.update({
+  id: '/artwork-upload',
+  path: '/artwork-upload',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -198,6 +204,7 @@ const AuthenticatedQuotationsIdRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
+  '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
@@ -228,6 +235,7 @@ export interface FileRoutesByFullPath {
   '/quotations/': typeof AuthenticatedQuotationsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
@@ -261,6 +269,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
@@ -295,6 +304,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/artwork-upload'
     | '/auth'
     | '/request'
     | '/approvals'
@@ -325,6 +335,7 @@ export interface FileRouteTypes {
     | '/quotations/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/artwork-upload'
     | '/auth'
     | '/request'
     | '/approvals'
@@ -357,6 +368,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
+    | '/artwork-upload'
     | '/auth'
     | '/request'
     | '/_authenticated/approvals'
@@ -390,6 +402,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  ArtworkUploadRoute: typeof ArtworkUploadRoute
   AuthRoute: typeof AuthRoute
   RequestRoute: typeof RequestRoute
   PortalTokenRoute: typeof PortalTokenRoute
@@ -410,6 +423,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artwork-upload': {
+      id: '/artwork-upload'
+      path: '/artwork-upload'
+      fullPath: '/artwork-upload'
+      preLoaderRoute: typeof ArtworkUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -672,6 +692,7 @@ const AuthenticatedRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  ArtworkUploadRoute: ArtworkUploadRoute,
   AuthRoute: AuthRoute,
   RequestRoute: RequestRoute,
   PortalTokenRoute: PortalTokenRoute,

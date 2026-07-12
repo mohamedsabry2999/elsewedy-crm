@@ -13,9 +13,12 @@ import {
 } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DEAL_STAGES, SERVICES, TEMPERATURES, formatEGP, formatDate, labelOf } from "@/lib/crm-constants";
-import { Plus } from "lucide-react";
+import { Plus, Calculator, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { db } from "@/lib/db-any";
+import { logActivity, notifyRole } from "@/lib/journey";
+import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_authenticated/pipeline")({
   component: PipelinePage,

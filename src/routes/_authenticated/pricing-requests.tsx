@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Plus, Calculator, Clock, CheckCircle2, AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { db, type AnyRow } from "@/lib/db-any";
 import { PageHeader } from "@/components/crm/PageHeader";
 import { StatCard } from "@/components/crm/StatCard";
 import { Card } from "@/components/ui/card";
@@ -15,13 +16,8 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import {
-  PRICING_REQUEST_STATUSES,
-  URGENCY_LEVELS,
-  SERVICES,
-  formatDate,
-  formatEGP,
-  formatNumber,
-  labelOf,
+  PRICING_REQUEST_STATUSES, URGENCY_LEVELS, SERVICES,
+  formatDate, formatEGP, formatNumber, labelOf,
 } from "@/lib/crm-constants";
 import { toast } from "sonner";
 
@@ -34,31 +30,24 @@ function PricingRequestsPage() {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState("all");
 
-  const { data: rows, isLoading } = useQuery({
+  const { data: rows, isLoading } = useQuery<AnyRow[]>({
     queryKey: ["pricing_requests", status],
     queryFn: async () => {
-      let q = supabase
-        .from("pricing_requests" as never)
-        .select("*, clients(company_name)")
-        .order("created_at", { ascending: false });
-      if (status !== "all") q = (q as unknown as { eq: (c: string, v: string) => typeof q }).eq("status", status);
+      let q = db.from("pricing_requests").select("*, clients(company_name)").order("created_at", { ascending: false });
+      if (status !== "all") q = q.eq("status", status);
       const { data, error } = await q;
       if (error) throw error;
-      return (data ?? []) as Array<Record<string, unknown> & { clients?: { company_name?: string } | null }>;
+      return (data ?? []) as AnyRow[];
     },
   });
 
-  const stats = (rows ?? []).reduce<{ total: number; pending: number; completed: number; urgent: number }>(
-    (a, r) => {
-      const s = String(r.status);
-      if (s === "submitted" || s === "in_review") a.pending++;
-      if (s === "priced" || s === "approved") a.completed++;
-      if (r.urgency === "high" || r.urgency === "critical") a.urgent++;
-      a.total++;
-      return a;
-    },
-    { total: 0, pending: 0, completed: 0, urgent: 0 },
-  );
+  const stats = { total: 0, pending: 0, completed: 0, urgent: 0 };
+  for (const r of rows ?? []) {
+    stats.total++;
+    if (r.status === "submitted" || r.status === "in_review") stats.pending++;
+    if (r.status === "priced" || r.status === "approved") stats.completed++;
+    if (r.urgency === "high" || r.urgency === "critical") stats.urgent++;
+  }
 
   return (
     <div>
@@ -91,19 +80,17 @@ function PricingRequestsPage() {
 
       <Card className="shadow-card overflow-hidden">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="text-right">الرقم</TableHead>
-              <TableHead className="text-right">العميل</TableHead>
-              <TableHead className="text-right">الخدمة</TableHead>
-              <TableHead className="text-right">الكمية</TableHead>
-              <TableHead className="text-right">تاريخ التسليم</TableHead>
-              <TableHead className="text-right">الأولوية</TableHead>
-              <TableHead className="text-right">السعر</TableHead>
-              <TableHead className="text-right">الحالة</TableHead>
-              <TableHead className="text-right">أُنشئ</TableHead>
-            </TableRow>
-          </TableHeader>
+          <TableHeader><TableRow>
+            <TableHead className="text-right">الرقم</TableHead>
+            <TableHead className="text-right">العميل</TableHead>
+            <TableHead className="text-right">الخدمة</TableHead>
+            <TableHead className="text-right">الكمية</TableHead>
+            <TableHead className="text-right">تاريخ التسليم</TableHead>
+            <TableHead className="text-right">الأولوية</TableHead>
+            <TableHead className="text-right">السعر</TableHead>
+            <TableHead className="text-right">الحالة</TableHead>
+            <TableHead className="text-right">أُنشئ</TableHead>
+          </TableRow></TableHeader>
           <TableBody>
             {isLoading && <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">جارٍ التحميل...</TableCell></TableRow>}
             {!isLoading && (rows ?? []).length === 0 && (
@@ -112,16 +99,16 @@ function PricingRequestsPage() {
               </TableCell></TableRow>
             )}
             {(rows ?? []).map((r) => (
-              <TableRow key={String(r.id)}>
-                <TableCell className="font-mono text-xs">{String(r.request_number ?? String(r.id).slice(0, 8))}</TableCell>
+              <TableRow key={r.id}>
+                <TableCell className="font-mono text-xs">{r.request_number ?? String(r.id).slice(0, 8)}</TableCell>
                 <TableCell className="font-medium">{r.clients?.company_name ?? "—"}</TableCell>
-                <TableCell>{labelOf(SERVICES, String(r.service_type ?? ""))}</TableCell>
-                <TableCell>{r.quantity ? formatNumber(Number(r.quantity)) : "—"}</TableCell>
-                <TableCell className="text-xs text-muted-foreground">{formatDate(r.delivery_date as string | null)}</TableCell>
-                <TableCell><Badge variant="outline">{labelOf(URGENCY_LEVELS, String(r.urgency ?? "normal"))}</Badge></TableCell>
-                <TableCell>{r.final_price ? formatEGP(Number(r.final_price)) : "—"}</TableCell>
-                <TableCell><Badge variant="secondary">{labelOf(PRICING_REQUEST_STATUSES, String(r.status))}</Badge></TableCell>
-                <TableCell className="text-xs text-muted-foreground">{formatDate(r.created_at as string)}</TableCell>
+                <TableCell>{labelOf(SERVICES, r.service_type)}</TableCell>
+                <TableCell>{r.quantity ? formatNumber(r.quantity) : "—"}</TableCell>
+                <TableCell className="text-xs text-muted-foreground">{formatDate(r.delivery_date)}</TableCell>
+                <TableCell><Badge variant="outline">{labelOf(URGENCY_LEVELS, r.urgency ?? "normal")}</Badge></TableCell>
+                <TableCell>{r.final_price ? formatEGP(r.final_price) : "—"}</TableCell>
+                <TableCell><Badge variant="secondary">{labelOf(PRICING_REQUEST_STATUSES, r.status)}</Badge></TableCell>
+                <TableCell className="text-xs text-muted-foreground">{formatDate(r.created_at)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -133,19 +120,9 @@ function PricingRequestsPage() {
 
 function PricingForm({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
   const [form, setForm] = useState({
-    client_id: "",
-    service_type: "digital",
-    product_type: "",
-    printing_type: "",
-    size: "",
-    quantity: "",
-    material: "",
-    colors: "",
-    finishing: "",
-    delivery_date: "",
-    urgency: "normal",
-    technical_notes: "",
-    status: "submitted",
+    client_id: "", service_type: "digital", product_type: "", printing_type: "", size: "",
+    quantity: "", material: "", colors: "", finishing: "", delivery_date: "",
+    urgency: "normal", technical_notes: "", status: "submitted",
   });
   const { data: clients } = useQuery({
     queryKey: ["clients-select"],
@@ -155,7 +132,7 @@ function PricingForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
     mutationFn: async () => {
       const { data: userRes } = await supabase.auth.getUser();
       const request_number = `PR-${Date.now().toString().slice(-6)}`;
-      const { error } = await supabase.from("pricing_requests" as never).insert({
+      const { error } = await db.from("pricing_requests").insert({
         request_number,
         client_id: form.client_id || null,
         service_type: form.service_type,
@@ -172,7 +149,7 @@ function PricingForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
         status: form.status,
         sales_owner: userRes.user?.id,
         created_by: userRes.user?.id,
-      } as never);
+      });
       if (error) throw error;
     },
     onSuccess: () => { toast.success("تم تسجيل طلب التسعير"); onSaved(); onClose(); },
@@ -196,13 +173,13 @@ function PricingForm({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
           </Select>
         </div>
         <div className="space-y-1.5"><Label className="text-xs">نوع المنتج</Label><Input value={form.product_type} onChange={(e) => setForm({ ...form, product_type: e.target.value })} placeholder="كتالوج / علبة / بروشور..." /></div>
-        <div className="space-y-1.5"><Label className="text-xs">نوع الطباعة</Label><Input value={form.printing_type} onChange={(e) => setForm({ ...form, printing_type: e.target.value })} placeholder="أوفست / ديجيتال / سلك سكرين" /></div>
+        <div className="space-y-1.5"><Label className="text-xs">نوع الطباعة</Label><Input value={form.printing_type} onChange={(e) => setForm({ ...form, printing_type: e.target.value })} placeholder="أوفست / ديجيتال" /></div>
         <div className="space-y-1.5"><Label className="text-xs">المقاس</Label><Input value={form.size} onChange={(e) => setForm({ ...form, size: e.target.value })} placeholder="A4 / 20×30 سم" /></div>
         <div className="space-y-1.5"><Label className="text-xs">الكمية</Label><Input type="number" value={form.quantity} onChange={(e) => setForm({ ...form, quantity: e.target.value })} /></div>
-        <div className="space-y-1.5"><Label className="text-xs">الألوان</Label><Input value={form.colors} onChange={(e) => setForm({ ...form, colors: e.target.value })} placeholder="4/4 / CMYK + Pantone" /></div>
-        <div className="space-y-1.5"><Label className="text-xs">الخامة</Label><Input value={form.material} onChange={(e) => setForm({ ...form, material: e.target.value })} placeholder="كوشيه 300 جم..." /></div>
-        <div className="space-y-1.5"><Label className="text-xs">التشطيبات</Label><Input value={form.finishing} onChange={(e) => setForm({ ...form, finishing: e.target.value })} placeholder="سلوفان مطفي / UV" /></div>
-        <div className="space-y-1.5"><Label className="text-xs">تاريخ التسليم المطلوب</Label><Input type="date" value={form.delivery_date} onChange={(e) => setForm({ ...form, delivery_date: e.target.value })} /></div>
+        <div className="space-y-1.5"><Label className="text-xs">الألوان</Label><Input value={form.colors} onChange={(e) => setForm({ ...form, colors: e.target.value })} placeholder="4/4" /></div>
+        <div className="space-y-1.5"><Label className="text-xs">الخامة</Label><Input value={form.material} onChange={(e) => setForm({ ...form, material: e.target.value })} placeholder="كوشيه 300 جم" /></div>
+        <div className="space-y-1.5"><Label className="text-xs">التشطيبات</Label><Input value={form.finishing} onChange={(e) => setForm({ ...form, finishing: e.target.value })} placeholder="سلوفان / UV" /></div>
+        <div className="space-y-1.5"><Label className="text-xs">تاريخ التسليم</Label><Input type="date" value={form.delivery_date} onChange={(e) => setForm({ ...form, delivery_date: e.target.value })} /></div>
         <div className="space-y-1.5"><Label className="text-xs">الأولوية</Label>
           <Select value={form.urgency} onValueChange={(v) => setForm({ ...form, urgency: v })}>
             <SelectTrigger><SelectValue /></SelectTrigger>

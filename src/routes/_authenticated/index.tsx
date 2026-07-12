@@ -89,10 +89,10 @@ function DashboardPage() {
         supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "follow_up"),
 
         supabase.from("orders").select("id", { count: "exact", head: true }),
-        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", IN_PRODUCTION_ORDER_STATUSES as unknown as string[]),
+        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", IN_PRODUCTION_ORDER_STATUSES as unknown as ("in_production"|"quality_check"|"packaging")[]),
         supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "delivered"),
         supabase.from("orders").select("id", { count: "exact", head: true }).lt("delivery_date", nowISO).not("status", "in", "(delivered,cancelled)"),
-        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", OPEN_ORDER_STATUSES as unknown as string[]),
+        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", OPEN_ORDER_STATUSES as unknown as ("new"|"in_production"|"quality_check"|"packaging"|"ready"|"shipped"|"on_hold")[]),
 
         supabase.from("complaints").select("id", { count: "exact", head: true }).in("status", ["open", "investigating", "escalated"]),
         supabase.from("complaints").select("id", { count: "exact", head: true }).eq("severity", "critical").not("status", "in", "(resolved,closed)"),
@@ -241,7 +241,7 @@ function DashboardPage() {
           <StatCard label="هذا الشهر" value={formatNumber(stats?.leadsMonth ?? 0)} icon={Building2} tone="info" />
           <StatCard label="ضمن الفترة" value={formatNumber(stats?.leadsRange ?? 0)} icon={Users} tone="default" />
           <StatCard label="بدون متابعة" value={formatNumber(stats?.leadsNoFollowup ?? 0)} icon={Clock} tone={stats?.leadsNoFollowup ? "warning" : "default"} />
-          <StatCard label="بدون مسؤول" value={formatNumber(stats?.leadsUnassigned ?? 0)} icon={AlertCircle} tone={stats?.leadsUnassigned ? "destructive" : "default"} />
+          <StatCard label="بدون مسؤول" value={formatNumber(stats?.leadsUnassigned ?? 0)} icon={AlertCircle} tone={stats?.leadsUnassigned ? "warning" : "default"} />
         </div>
       </section>
 
@@ -278,7 +278,7 @@ function DashboardPage() {
           <StatCard label="طلبات مفتوحة" value={formatNumber(stats?.ordersOpen ?? 0)} icon={Package} tone="primary" />
           <StatCard label="تحت الإنتاج" value={formatNumber(stats?.ordersInProduction ?? 0)} icon={Package} tone="info" />
           <StatCard label="تم التسليم" value={formatNumber(stats?.ordersDelivered ?? 0)} icon={Truck} tone="success" />
-          <StatCard label="متأخرة عن الموعد" value={formatNumber(stats?.ordersDelayed ?? 0)} icon={AlertCircle} tone={stats?.ordersDelayed ? "destructive" : "default"} />
+          <StatCard label="متأخرة عن الموعد" value={formatNumber(stats?.ordersDelayed ?? 0)} icon={AlertCircle} tone={stats?.ordersDelayed ? "warning" : "default"} />
           <StatCard label="شكاوى مفتوحة" value={formatNumber(stats?.complaintsOpen ?? 0)} icon={MessageSquareWarning} tone={stats?.complaintsOpen ? "warning" : "default"} hint={`${stats?.complaintsCritical ?? 0} حرجة`} />
           <StatCard label="متابعات متأخرة" value={formatNumber(stats?.tasksOverdue ?? 0)} icon={Clock} tone={stats?.tasksOverdue ? "warning" : "default"} />
         </div>
@@ -289,7 +289,7 @@ function DashboardPage() {
         <h2 className="text-sm font-bold text-muted-foreground mb-3">المالية والعملاء</h2>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <StatCard label="مستحقات غير محصلة" value={formatEGP(stats?.outstandingReceivable ?? 0)} icon={Wallet} tone={stats?.outstandingReceivable ? "warning" : "default"} />
-          <StatCard label="دفعات متأخرة" value={formatNumber(stats?.paymentsOverdue ?? 0)} icon={AlertCircle} tone={stats?.paymentsOverdue ? "destructive" : "default"} />
+          <StatCard label="دفعات متأخرة" value={formatNumber(stats?.paymentsOverdue ?? 0)} icon={AlertCircle} tone={stats?.paymentsOverdue ? "warning" : "default"} />
           <StatCard label="مرشحون لإعادة الطلب" value={formatNumber(stats?.reorderCandidates ?? 0)} icon={RotateCcw} tone="info" hint="آخر طلب > 60 يوم" />
           <StatCard label="إجمالي الطلبات" value={formatNumber(stats?.ordersTotal ?? 0)} icon={Package} tone="default" />
         </div>

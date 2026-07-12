@@ -246,6 +246,18 @@ function LeadsPage() {
                   <TableCell className="text-xs text-muted-foreground">{formatDate(l.next_followup_date)}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
+                      {l.status !== "converted" && (
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-success" title="تحويل إلى صفقة"
+                          onClick={() => convert.mutate(l as unknown as Record<string, unknown>)}
+                          disabled={convert.isPending}>
+                          <ArrowLeftRight className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button size="icon" variant="ghost" className="h-8 w-8" title="إضافة مهمة متابعة"
+                        onClick={() => addTask.mutate(l as unknown as Record<string, unknown>)}
+                        disabled={addTask.isPending}>
+                        <ListChecks className="h-4 w-4" />
+                      </Button>
                       {l.whatsapp && (
                         <a href={`https://wa.me/${l.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-success"><MessageSquare className="h-4 w-4" /></Button>

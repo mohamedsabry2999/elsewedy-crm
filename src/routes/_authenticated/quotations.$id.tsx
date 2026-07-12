@@ -145,8 +145,69 @@ function QuotationDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  if (isLoading) return <div className="p-8 text-muted-foreground">جارٍ التحميل...</div>;
-  if (!quote) return <div className="p-8">العرض غير موجود</div>;
+  const transition = useMutation({
+    mutationFn: async (next: "sent" | "approved") => {
+      const patch: Record<string, unknown> = { status: next };
+      if (next === "sent") patch.sent_date = new Date().toISOString();
+      if (next === "approved") patch.approved_date = new Date().toISOString();
+      const { error } = await supabase.from("quotations").update(patch as never).eq("id", id);
+      if (error) throw error;
+      await logActivity(`quote_${next}`,
+        `عرض ${quote?.quote_number} — ${next === "sent" ? "أُرسل للعميل" : "تم اعتماده"}`,
+        { client_id: quote?.client_id, deal_id: quote?.deal_id });
+      if (next === "approved") {
+        await notifyRole("production_planning", "quote_approved",
+          "عرض معتمد جاهز للتحويل",
+          `${quote?.quote_number} — ${quote?.clients?.company_name ?? ""}`,
+          `/quotations/${id}`);
+      }
+    },
+    onSuccess: (_r, next) => {
+      toast.success(next === "sent" ? "تم الإرسال" : "تم الاعتماد");
+      qc.invalidateQueries({ queryKey: ["quotation", id] });
+      qc.invalidateQueries({ queryKey: ["quotations"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const toOrder = useMutation({
+    mutationFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      const order_number = `ORD-${Date.now().toString().slice(-6)}`;
+      const { data, error } = await supabase.from("orders").insert({
+        order_number,
+        client_id: quote?.client_id ?? null,
+        quotation_id: id,
+        title: `طلب — ${quote?.quote_number}`,
+        total_amount: Number(quote?.final_price ?? quote?.total_price ?? 0),
+        paid_amount: 0,
+        status: "new" as const,
+        owner_id: quote?.owner_id ?? u.user?.id,
+        created_by: u.user?.id,
+      } as never).select("id").single();
+      if (error) throw error;
+      const stages = PRODUCTION_STAGE_TEMPLATE.map((name, i) => ({
+        order_id: data!.id, stage_name: name, stage_order: i, status: "pending" as const,
+      }));
+      await supabase.from("production_stages").insert(stages as never);
+      await logActivity("order_created",
+        `تحويل عرض ${quote?.quote_number} إلى طلب ${order_number}`,
+        { client_id: quote?.client_id, deal_id: quote?.deal_id });
+      await notifyRole("production_planning", "order_created",
+        "طلب جديد للإنتاج", order_number, `/production`, { type: "order", id: data!.id });
+      if (quote?.deal_id) {
+        await supabase.from("deals").update({ stage: "won" as const }).eq("id", quote.deal_id as string);
+      }
+      return data!.id as string;
+    },
+    onSuccess: () => {
+      toast.success("تم إنشاء الطلب ومراحل الإنتاج");
+      qc.invalidateQueries({ queryKey: ["orders"] });
+      qc.invalidateQueries({ queryKey: ["deals"] });
+      qc.invalidateQueries({ queryKey: ["quotation", id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   return (
     <div>

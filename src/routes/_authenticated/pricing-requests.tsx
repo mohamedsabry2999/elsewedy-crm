@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, Calculator, Clock, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Plus, Calculator, Clock, CheckCircle2, AlertTriangle, DollarSign, FileText } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { logActivity, notifyRole } from "@/lib/journey";
 import { supabase } from "@/integrations/supabase/client";
 import { db, type AnyRow } from "@/lib/db-any";
 import { PageHeader } from "@/components/crm/PageHeader";

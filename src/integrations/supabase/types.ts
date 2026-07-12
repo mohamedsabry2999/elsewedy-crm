@@ -128,6 +128,51 @@ export type Database = {
           },
         ]
       }
+      approvals: {
+        Row: {
+          approver: string | null
+          created_at: string
+          decided_at: string | null
+          decision_notes: string | null
+          id: string
+          reason: string | null
+          related_id: string | null
+          related_table: string | null
+          request_type: string
+          requested_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          approver?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decision_notes?: string | null
+          id?: string
+          reason?: string | null
+          related_id?: string | null
+          related_table?: string | null
+          request_type: string
+          requested_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          approver?: string | null
+          created_at?: string
+          decided_at?: string | null
+          decision_notes?: string | null
+          id?: string
+          reason?: string | null
+          related_id?: string | null
+          related_table?: string | null
+          request_type?: string
+          requested_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       automation_rules: {
         Row: {
           action_config: Json
@@ -302,6 +347,69 @@ export type Database = {
         }
         Relationships: []
       }
+      competitors: {
+        Row: {
+          advantage: string | null
+          client_id: string | null
+          competitor_price: number | null
+          created_at: string
+          created_by: string | null
+          deal_id: string | null
+          id: string
+          name: string
+          notes: string | null
+          outcome: string | null
+          reason: string | null
+          service: string | null
+          updated_at: string
+        }
+        Insert: {
+          advantage?: string | null
+          client_id?: string | null
+          competitor_price?: number | null
+          created_at?: string
+          created_by?: string | null
+          deal_id?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          outcome?: string | null
+          reason?: string | null
+          service?: string | null
+          updated_at?: string
+        }
+        Update: {
+          advantage?: string | null
+          client_id?: string | null
+          competitor_price?: number | null
+          created_at?: string
+          created_by?: string | null
+          deal_id?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          outcome?: string | null
+          reason?: string | null
+          service?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "competitors_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "competitors_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       complaints: {
         Row: {
           assigned_to: string | null
@@ -446,6 +554,84 @@ export type Database = {
           },
         ]
       }
+      deliveries: {
+        Row: {
+          address: string | null
+          city: string | null
+          client_id: string | null
+          contact_name: string | null
+          created_at: string
+          created_by: string | null
+          delivered_at: string | null
+          delivery_number: string | null
+          driver: string | null
+          id: string
+          method: string | null
+          notes: string | null
+          order_id: string | null
+          phone: string | null
+          proof_url: string | null
+          scheduled_at: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          client_id?: string | null
+          contact_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          delivery_number?: string | null
+          driver?: string | null
+          id?: string
+          method?: string | null
+          notes?: string | null
+          order_id?: string | null
+          phone?: string | null
+          proof_url?: string | null
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          client_id?: string | null
+          contact_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          delivered_at?: string | null
+          delivery_number?: string | null
+          driver?: string | null
+          id?: string
+          method?: string | null
+          notes?: string | null
+          order_id?: string | null
+          phone?: string | null
+          proof_url?: string | null
+          scheduled_at?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "deliveries_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "deliveries_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       import_logs: {
         Row: {
           created_at: string
@@ -494,6 +680,39 @@ export type Database = {
           total_rows?: number
           updated_count?: number
           user_id?: string
+        }
+        Relationships: []
+      }
+      knowledge_articles: {
+        Row: {
+          category: string | null
+          content: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          tags: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          tags?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          tags?: string[] | null
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -583,6 +802,74 @@ export type Database = {
           },
           {
             foreignKeyName: "leads_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meeting_reports: {
+        Row: {
+          budget: number | null
+          client_id: string | null
+          client_needs: string | null
+          competitors_mentioned: string | null
+          created_at: string
+          created_by: string | null
+          discussed_services: string | null
+          id: string
+          meeting_date: string
+          meeting_type: string | null
+          next_action: string | null
+          next_followup: string | null
+          notes: string | null
+          probability: number | null
+          purpose: string | null
+          sales_owner: string | null
+          updated_at: string
+        }
+        Insert: {
+          budget?: number | null
+          client_id?: string | null
+          client_needs?: string | null
+          competitors_mentioned?: string | null
+          created_at?: string
+          created_by?: string | null
+          discussed_services?: string | null
+          id?: string
+          meeting_date?: string
+          meeting_type?: string | null
+          next_action?: string | null
+          next_followup?: string | null
+          notes?: string | null
+          probability?: number | null
+          purpose?: string | null
+          sales_owner?: string | null
+          updated_at?: string
+        }
+        Update: {
+          budget?: number | null
+          client_id?: string | null
+          client_needs?: string | null
+          competitors_mentioned?: string | null
+          created_at?: string
+          created_by?: string | null
+          discussed_services?: string | null
+          id?: string
+          meeting_date?: string
+          meeting_type?: string | null
+          next_action?: string | null
+          next_followup?: string | null
+          notes?: string | null
+          probability?: number | null
+          purpose?: string | null
+          sales_owner?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meeting_reports_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
@@ -714,6 +1001,82 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          client_id: string | null
+          collection_owner: string | null
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          due_date: string | null
+          id: string
+          method: string | null
+          notes: string | null
+          order_id: string | null
+          paid_amount: number
+          quotation_id: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+        }
+        Insert: {
+          client_id?: string | null
+          collection_owner?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          due_date?: string | null
+          id?: string
+          method?: string | null
+          notes?: string | null
+          order_id?: string | null
+          paid_amount?: number
+          quotation_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Update: {
+          client_id?: string | null
+          collection_owner?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          due_date?: string | null
+          id?: string
+          method?: string | null
+          notes?: string | null
+          order_id?: string | null
+          paid_amount?: number
+          quotation_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portal_tokens: {
         Row: {
           client_id: string
@@ -745,6 +1108,108 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pricing_requests: {
+        Row: {
+          artwork_url: string | null
+          client_id: string | null
+          colors: string | null
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          deal_id: string | null
+          delivery_date: string | null
+          final_price: number | null
+          finishing: string | null
+          id: string
+          internal_notes: string | null
+          material: string | null
+          pricing_owner: string | null
+          printing_type: string | null
+          product_type: string | null
+          quantity: number | null
+          request_number: string | null
+          sales_owner: string | null
+          sample_required: boolean | null
+          service_type: string | null
+          size: string | null
+          status: string
+          technical_notes: string | null
+          updated_at: string
+          urgency: string | null
+        }
+        Insert: {
+          artwork_url?: string | null
+          client_id?: string | null
+          colors?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          deal_id?: string | null
+          delivery_date?: string | null
+          final_price?: number | null
+          finishing?: string | null
+          id?: string
+          internal_notes?: string | null
+          material?: string | null
+          pricing_owner?: string | null
+          printing_type?: string | null
+          product_type?: string | null
+          quantity?: number | null
+          request_number?: string | null
+          sales_owner?: string | null
+          sample_required?: boolean | null
+          service_type?: string | null
+          size?: string | null
+          status?: string
+          technical_notes?: string | null
+          updated_at?: string
+          urgency?: string | null
+        }
+        Update: {
+          artwork_url?: string | null
+          client_id?: string | null
+          colors?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          deal_id?: string | null
+          delivery_date?: string | null
+          final_price?: number | null
+          finishing?: string | null
+          id?: string
+          internal_notes?: string | null
+          material?: string | null
+          pricing_owner?: string | null
+          printing_type?: string | null
+          product_type?: string | null
+          quantity?: number | null
+          request_number?: string | null
+          sales_owner?: string | null
+          sample_required?: boolean | null
+          service_type?: string | null
+          size?: string | null
+          status?: string
+          technical_notes?: string | null
+          updated_at?: string
+          urgency?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pricing_requests_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pricing_requests_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
             referencedColumns: ["id"]
           },
         ]
@@ -989,6 +1454,81 @@ export type Database = {
           },
           {
             foreignKeyName: "quotations_deal_id_fkey"
+            columns: ["deal_id"]
+            isOneToOne: false
+            referencedRelation: "deals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      samples: {
+        Row: {
+          client_feedback: string | null
+          client_id: string | null
+          converted_to_order: boolean | null
+          created_at: string
+          created_by: string | null
+          deal_id: string | null
+          delivered_at: string | null
+          description: string | null
+          id: string
+          notes: string | null
+          produced_at: string | null
+          product_type: string | null
+          requested_at: string | null
+          sample_number: string | null
+          service_type: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          client_feedback?: string | null
+          client_id?: string | null
+          converted_to_order?: boolean | null
+          created_at?: string
+          created_by?: string | null
+          deal_id?: string | null
+          delivered_at?: string | null
+          description?: string | null
+          id?: string
+          notes?: string | null
+          produced_at?: string | null
+          product_type?: string | null
+          requested_at?: string | null
+          sample_number?: string | null
+          service_type?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          client_feedback?: string | null
+          client_id?: string | null
+          converted_to_order?: boolean | null
+          created_at?: string
+          created_by?: string | null
+          deal_id?: string | null
+          delivered_at?: string | null
+          description?: string | null
+          id?: string
+          notes?: string | null
+          produced_at?: string | null
+          product_type?: string | null
+          requested_at?: string | null
+          sample_number?: string | null
+          service_type?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "samples_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "samples_deal_id_fkey"
             columns: ["deal_id"]
             isOneToOne: false
             referencedRelation: "deals"

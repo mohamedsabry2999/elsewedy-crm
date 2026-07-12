@@ -39,7 +39,8 @@ export type ModuleKey =
   | "orders" | "production" | "deliveries" | "complaints"
   | "payments" | "campaigns" | "competitors" | "automation"
   | "assistant" | "knowledge" | "reports" | "portal-links"
-  | "import" | "data-quality";
+  | "import" | "data-quality" | "artwork";
+
 
 export type Capability =
   | "view" | "create" | "edit" | "delete"
@@ -79,6 +80,8 @@ const MODULE_VIEW: Record<ModuleKey, AppRole[]> = {
 
   import: ["sales_manager","marketing_manager"],
   "data-quality": ["top_management","sales_manager","marketing_manager","viewer"],
+  artwork: ["top_management","sales_manager","sales_person","production","production_planning","quality_control","customer_service","viewer"],
+
 };
 
 // Capability → roles allowed (per module bucket)
@@ -162,7 +165,15 @@ const DEFAULT_CAPS: Record<ModuleKey, CapMap> = {
 
   import: { view: MODULE_VIEW.import, import: ["sales_manager","marketing_manager"], rollback: ["sales_manager","marketing_manager"] },
   "data-quality": { view: MODULE_VIEW["data-quality"], merge: ["sales_manager","marketing_manager"] },
+  artwork: {
+    view: MODULE_VIEW.artwork,
+    create: ["sales_manager","sales_person","customer_service","production","quality_control"],
+    edit: ["sales_manager","production","quality_control","customer_service"],
+    delete: ["sales_manager"],
+    approve: ["sales_manager","production","quality_control"],
+  },
 };
+
 
 export function can(roles: string[], module: ModuleKey, capability: Capability = "view"): boolean {
   if (!roles || roles.length === 0) return false;

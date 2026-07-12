@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RequestRouteImport } from './routes/request'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ArtworkUploadRouteImport } from './routes/artwork-upload'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as PortalTokenRouteImport } from './routes/portal.$token'
@@ -35,10 +36,12 @@ import { Route as AuthenticatedClientsRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCampaignsRouteImport } from './routes/_authenticated/campaigns'
 import { Route as AuthenticatedAutomationRouteImport } from './routes/_authenticated/automation'
 import { Route as AuthenticatedAssistantRouteImport } from './routes/_authenticated/assistant'
+import { Route as AuthenticatedArtworkRouteImport } from './routes/_authenticated/artwork'
 import { Route as AuthenticatedApprovalsRouteImport } from './routes/_authenticated/approvals'
 import { Route as AuthenticatedQuotationsIndexRouteImport } from './routes/_authenticated/quotations.index'
 import { Route as ApiPublicLeadRequestRouteImport } from './routes/api/public/lead-request'
 import { Route as AuthenticatedQuotationsIdRouteImport } from './routes/_authenticated/quotations.$id'
+import { Route as AuthenticatedArtworkPendingRouteImport } from './routes/_authenticated/artwork.pending'
 
 const RequestRoute = RequestRouteImport.update({
   id: '/request',
@@ -48,6 +51,11 @@ const RequestRoute = RequestRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ArtworkUploadRoute = ArtworkUploadRouteImport.update({
+  id: '/artwork-upload',
+  path: '/artwork-upload',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -173,6 +181,11 @@ const AuthenticatedAssistantRoute = AuthenticatedAssistantRouteImport.update({
   path: '/assistant',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedArtworkRoute = AuthenticatedArtworkRouteImport.update({
+  id: '/artwork',
+  path: '/artwork',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedApprovalsRoute = AuthenticatedApprovalsRouteImport.update({
   id: '/approvals',
   path: '/approvals',
@@ -195,12 +208,20 @@ const AuthenticatedQuotationsIdRoute =
     path: '/quotations/$id',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedArtworkPendingRoute =
+  AuthenticatedArtworkPendingRouteImport.update({
+    id: '/pending',
+    path: '/pending',
+    getParentRoute: () => AuthenticatedArtworkRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
+  '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/artwork': typeof AuthenticatedArtworkRouteWithChildren
   '/assistant': typeof AuthenticatedAssistantRoute
   '/automation': typeof AuthenticatedAutomationRoute
   '/campaigns': typeof AuthenticatedCampaignsRoute
@@ -223,14 +244,17 @@ export interface FileRoutesByFullPath {
   '/samples': typeof AuthenticatedSamplesRoute
   '/tasks': typeof AuthenticatedTasksRoute
   '/portal/$token': typeof PortalTokenRoute
+  '/artwork/pending': typeof AuthenticatedArtworkPendingRoute
   '/quotations/$id': typeof AuthenticatedQuotationsIdRoute
   '/api/public/lead-request': typeof ApiPublicLeadRequestRoute
   '/quotations/': typeof AuthenticatedQuotationsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
+  '/artwork': typeof AuthenticatedArtworkRouteWithChildren
   '/assistant': typeof AuthenticatedAssistantRoute
   '/automation': typeof AuthenticatedAutomationRoute
   '/campaigns': typeof AuthenticatedCampaignsRoute
@@ -254,6 +278,7 @@ export interface FileRoutesByTo {
   '/tasks': typeof AuthenticatedTasksRoute
   '/portal/$token': typeof PortalTokenRoute
   '/': typeof AuthenticatedIndexRoute
+  '/artwork/pending': typeof AuthenticatedArtworkPendingRoute
   '/quotations/$id': typeof AuthenticatedQuotationsIdRoute
   '/api/public/lead-request': typeof ApiPublicLeadRequestRoute
   '/quotations': typeof AuthenticatedQuotationsIndexRoute
@@ -261,9 +286,11 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
   '/request': typeof RequestRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
+  '/_authenticated/artwork': typeof AuthenticatedArtworkRouteWithChildren
   '/_authenticated/assistant': typeof AuthenticatedAssistantRoute
   '/_authenticated/automation': typeof AuthenticatedAutomationRoute
   '/_authenticated/campaigns': typeof AuthenticatedCampaignsRoute
@@ -287,6 +314,7 @@ export interface FileRoutesById {
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
   '/portal/$token': typeof PortalTokenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/artwork/pending': typeof AuthenticatedArtworkPendingRoute
   '/_authenticated/quotations/$id': typeof AuthenticatedQuotationsIdRoute
   '/api/public/lead-request': typeof ApiPublicLeadRequestRoute
   '/_authenticated/quotations/': typeof AuthenticatedQuotationsIndexRoute
@@ -295,9 +323,11 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/artwork-upload'
     | '/auth'
     | '/request'
     | '/approvals'
+    | '/artwork'
     | '/assistant'
     | '/automation'
     | '/campaigns'
@@ -320,14 +350,17 @@ export interface FileRouteTypes {
     | '/samples'
     | '/tasks'
     | '/portal/$token'
+    | '/artwork/pending'
     | '/quotations/$id'
     | '/api/public/lead-request'
     | '/quotations/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/artwork-upload'
     | '/auth'
     | '/request'
     | '/approvals'
+    | '/artwork'
     | '/assistant'
     | '/automation'
     | '/campaigns'
@@ -351,15 +384,18 @@ export interface FileRouteTypes {
     | '/tasks'
     | '/portal/$token'
     | '/'
+    | '/artwork/pending'
     | '/quotations/$id'
     | '/api/public/lead-request'
     | '/quotations'
   id:
     | '__root__'
     | '/_authenticated'
+    | '/artwork-upload'
     | '/auth'
     | '/request'
     | '/_authenticated/approvals'
+    | '/_authenticated/artwork'
     | '/_authenticated/assistant'
     | '/_authenticated/automation'
     | '/_authenticated/campaigns'
@@ -383,6 +419,7 @@ export interface FileRouteTypes {
     | '/_authenticated/tasks'
     | '/portal/$token'
     | '/_authenticated/'
+    | '/_authenticated/artwork/pending'
     | '/_authenticated/quotations/$id'
     | '/api/public/lead-request'
     | '/_authenticated/quotations/'
@@ -390,6 +427,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  ArtworkUploadRoute: typeof ArtworkUploadRoute
   AuthRoute: typeof AuthRoute
   RequestRoute: typeof RequestRoute
   PortalTokenRoute: typeof PortalTokenRoute
@@ -410,6 +448,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/artwork-upload': {
+      id: '/artwork-upload'
+      path: '/artwork-upload'
+      fullPath: '/artwork-upload'
+      preLoaderRoute: typeof ArtworkUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -580,6 +625,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssistantRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/artwork': {
+      id: '/_authenticated/artwork'
+      path: '/artwork'
+      fullPath: '/artwork'
+      preLoaderRoute: typeof AuthenticatedArtworkRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/approvals': {
       id: '/_authenticated/approvals'
       path: '/approvals'
@@ -608,11 +660,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedQuotationsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/artwork/pending': {
+      id: '/_authenticated/artwork/pending'
+      path: '/pending'
+      fullPath: '/artwork/pending'
+      preLoaderRoute: typeof AuthenticatedArtworkPendingRouteImport
+      parentRoute: typeof AuthenticatedArtworkRoute
+    }
   }
 }
 
+interface AuthenticatedArtworkRouteChildren {
+  AuthenticatedArtworkPendingRoute: typeof AuthenticatedArtworkPendingRoute
+}
+
+const AuthenticatedArtworkRouteChildren: AuthenticatedArtworkRouteChildren = {
+  AuthenticatedArtworkPendingRoute: AuthenticatedArtworkPendingRoute,
+}
+
+const AuthenticatedArtworkRouteWithChildren =
+  AuthenticatedArtworkRoute._addFileChildren(AuthenticatedArtworkRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedApprovalsRoute: typeof AuthenticatedApprovalsRoute
+  AuthenticatedArtworkRoute: typeof AuthenticatedArtworkRouteWithChildren
   AuthenticatedAssistantRoute: typeof AuthenticatedAssistantRoute
   AuthenticatedAutomationRoute: typeof AuthenticatedAutomationRoute
   AuthenticatedCampaignsRoute: typeof AuthenticatedCampaignsRoute
@@ -641,6 +712,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedApprovalsRoute: AuthenticatedApprovalsRoute,
+  AuthenticatedArtworkRoute: AuthenticatedArtworkRouteWithChildren,
   AuthenticatedAssistantRoute: AuthenticatedAssistantRoute,
   AuthenticatedAutomationRoute: AuthenticatedAutomationRoute,
   AuthenticatedCampaignsRoute: AuthenticatedCampaignsRoute,
@@ -672,6 +744,7 @@ const AuthenticatedRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  ArtworkUploadRoute: ArtworkUploadRoute,
   AuthRoute: AuthRoute,
   RequestRoute: RequestRoute,
   PortalTokenRoute: PortalTokenRoute,

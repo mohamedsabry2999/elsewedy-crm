@@ -173,6 +173,118 @@ export type Database = {
         }
         Relationships: []
       }
+      artwork_files: {
+        Row: {
+          approved_for_production: boolean | null
+          client_id: string | null
+          created_at: string
+          file_name: string
+          file_size: number | null
+          file_type: string | null
+          id: string
+          is_reference: boolean | null
+          job_ticket_id: string | null
+          notes: string | null
+          order_id: string | null
+          product_type: string | null
+          quotation_id: string | null
+          required_corrections: string | null
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          source: string
+          status: Database["public"]["Enums"]["artwork_status"]
+          storage_path: string
+          submitter_company: string | null
+          submitter_email: string | null
+          submitter_name: string | null
+          submitter_phone: string | null
+          submitter_reference: string | null
+          updated_at: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          approved_for_production?: boolean | null
+          client_id?: string | null
+          created_at?: string
+          file_name: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          is_reference?: boolean | null
+          job_ticket_id?: string | null
+          notes?: string | null
+          order_id?: string | null
+          product_type?: string | null
+          quotation_id?: string | null
+          required_corrections?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source?: string
+          status?: Database["public"]["Enums"]["artwork_status"]
+          storage_path: string
+          submitter_company?: string | null
+          submitter_email?: string | null
+          submitter_name?: string | null
+          submitter_phone?: string | null
+          submitter_reference?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          approved_for_production?: boolean | null
+          client_id?: string | null
+          created_at?: string
+          file_name?: string
+          file_size?: number | null
+          file_type?: string | null
+          id?: string
+          is_reference?: boolean | null
+          job_ticket_id?: string | null
+          notes?: string | null
+          order_id?: string | null
+          product_type?: string | null
+          quotation_id?: string | null
+          required_corrections?: string | null
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          source?: string
+          status?: Database["public"]["Enums"]["artwork_status"]
+          storage_path?: string
+          submitter_company?: string | null
+          submitter_email?: string | null
+          submitter_name?: string | null
+          submitter_phone?: string | null
+          submitter_reference?: string | null
+          updated_at?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artwork_files_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artwork_files_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "artwork_files_quotation_id_fkey"
+            columns: ["quotation_id"]
+            isOneToOne: false
+            referencedRelation: "quotations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       automation_rules: {
         Row: {
           action_config: Json
@@ -1691,6 +1803,13 @@ export type Database = {
         | "production"
         | "finance"
         | "quality_control"
+      artwork_status:
+        | "uploaded"
+        | "pending_review"
+        | "approved"
+        | "rejected"
+        | "needs_revision"
+        | "archived"
       automation_status: "active" | "paused" | "draft"
       campaign_platform:
         | "meta"
@@ -1913,6 +2032,14 @@ export const Constants = {
         "production",
         "finance",
         "quality_control",
+      ],
+      artwork_status: [
+        "uploaded",
+        "pending_review",
+        "approved",
+        "rejected",
+        "needs_revision",
+        "archived",
       ],
       automation_status: ["active", "paused", "draft"],
       campaign_platform: [

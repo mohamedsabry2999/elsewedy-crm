@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Building2, KanbanSquare, CheckSquare, FileText,
   BarChart3, Megaphone, MessageSquareWarning, Menu, LogOut,
   Package, Factory, Bot, Zap, ExternalLink, Upload, ShieldCheck,
-  Calculator, Truck, Wallet, BookOpen, Swords, CalendarDays,
+  Calculator, Truck, Wallet, BookOpen, Swords, CalendarDays, Image as ImageIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -45,6 +45,8 @@ const NAV: NavItem[] = [
   { to: "/production", label: "تتبع الإنتاج", icon: Factory, group: "التشغيل" },
   { to: "/deliveries", label: "التسليمات", icon: Truck, group: "التشغيل" },
   { to: "/complaints", label: "الشكاوى", icon: MessageSquareWarning, group: "التشغيل" },
+  { to: "/artwork", label: "ملفات التصميم", icon: ImageIcon, group: "التشغيل" },
+
 
   { to: "/payments", label: "التحصيلات", icon: Wallet, group: "المالية" },
 

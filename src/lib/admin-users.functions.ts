@@ -1,19 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { OWNER_EMAIL, assertAdmin, logAudit } from "./admin-users.server";
 
-const OWNER_EMAIL = "mohamedsabryabdelfatah@gmail.com";
-
-async function assertAdmin(context: { supabase: any; userId: string }) {
-  const { data, error } = await context.supabase.rpc("has_role", {
-    _user_id: context.userId,
-    _role: "super_admin",
-  });
-  if (error || !data) throw new Error("Forbidden: super_admin required");
-}
-
-async function logAudit(admin: any, performedBy: string, action: string, targetUser: string | null, details: any) {
-  await admin.from("audit_logs").insert({ action, performed_by: performedBy, target_user: targetUser, details });
-}
 
 export const listAdminUsers = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

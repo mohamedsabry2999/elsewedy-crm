@@ -1,112 +1,217 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import {
-  Users,
-  Building2,
-  FileText,
-  KanbanSquare,
-  TrendingUp,
-  Clock,
-  AlertCircle,
-  CheckCircle2,
-  Flame,
-  Package,
-  MessageSquareWarning,
-  Target,
+  Users, Building2, FileText, KanbanSquare, TrendingUp, Clock,
+  AlertCircle, CheckCircle2, Flame, Package, MessageSquareWarning,
+  Target, Wallet, Truck, RotateCcw, Calculator,
 } from "lucide-react";
 import {
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  CartesianGrid,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
+  ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid,
+  PieChart, Pie, Cell, Legend,
 } from "recharts";
 import { supabase } from "@/integrations/supabase/client";
 import { StatCard } from "@/components/crm/StatCard";
 import { PageHeader } from "@/components/crm/PageHeader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { formatEGP, formatNumber, LEAD_SOURCES, SERVICES, labelOf } from "@/lib/crm-constants";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  formatEGP, formatNumber, LEAD_SOURCES, SERVICES, labelOf,
+  DEAL_STAGE_PROBABILITY, IN_PRODUCTION_ORDER_STATUSES, OPEN_ORDER_STATUSES,
+} from "@/lib/crm-constants";
 
 export const Route = createFileRoute("/_authenticated/")({
   component: DashboardPage,
 });
 
+type RangeKey = "7d" | "30d" | "90d" | "ytd" | "all";
+const RANGE_OPTIONS: { value: RangeKey; label: string }[] = [
+  { value: "7d", label: "آخر 7 أيام" },
+  { value: "30d", label: "آخر 30 يوم" },
+  { value: "90d", label: "آخر 90 يوم" },
+  { value: "ytd", label: "منذ بداية السنة" },
+  { value: "all", label: "كل الفترات" },
+];
+
+function rangeStart(key: RangeKey): string | null {
+  const now = new Date();
+  if (key === "all") return null;
+  if (key === "ytd") return new Date(now.getFullYear(), 0, 1).toISOString();
+  const days = key === "7d" ? 7 : key === "30d" ? 30 : 90;
+  return new Date(now.getTime() - days * 86400_000).toISOString();
+}
+
 function DashboardPage() {
-  const { data: stats } = useQuery({
-    queryKey: ["dashboard-stats"],
+  const [range, setRange] = useState<RangeKey>("30d");
+  const rangeStartISO = rangeStart(range);
+
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ["dashboard-stats", range],
     queryFn: async () => {
       const now = new Date();
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
-      const startOfWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      const startOfWeek = new Date(now.getTime() - 7 * 86400_000).toISOString();
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const nowISO = now.toISOString();
 
-      const [leadsToday, leadsWeek, leadsMonth, dealsWon, dealsLost, dealsOpen, pipelineValue, quotationsSent, tasksOverdue, complaintsOpen] = await Promise.all([
+      // Build lead query with optional range filter
+      const leadsInRange = supabase.from("leads").select("id", { count: "exact", head: true });
+      if (rangeStartISO) leadsInRange.gte("created_at", rangeStartISO);
+
+      const [
+        leadsToday, leadsWeek, leadsMonth, leadsRange, leadsNoFollowup, leadsUnassigned,
+        dealsWonRows, dealsLostCount, dealsOpenRows,
+        quotationsAll, quotationsSent, quotationsApproved, quotationsRejected,
+        quotationsWaiting, quotationsExpired, quotationsFollowUp,
+        ordersAll, ordersInProduction, ordersDelivered, ordersDelayed, ordersOpen,
+        complaintsOpen, complaintsCritical,
+        paymentsOverdue, paymentsUnpaid,
+        tasksOverdue,
+        reorderCandidates,
+      ] = await Promise.all([
         supabase.from("leads").select("id", { count: "exact", head: true }).gte("created_at", startOfDay),
         supabase.from("leads").select("id", { count: "exact", head: true }).gte("created_at", startOfWeek),
         supabase.from("leads").select("id", { count: "exact", head: true }).gte("created_at", startOfMonth),
-        supabase.from("deals").select("value").eq("stage", "won"),
+        leadsInRange,
+        supabase.from("leads").select("id", { count: "exact", head: true }).is("next_followup_date", null).not("status", "in", "(converted,lost)"),
+        supabase.from("leads").select("id", { count: "exact", head: true }).is("assigned_to", null),
+
+        supabase.from("deals").select("value, stage").eq("stage", "won"),
         supabase.from("deals").select("id", { count: "exact", head: true }).eq("stage", "lost"),
-        supabase.from("deals").select("value").not("stage", "in", "(won,lost,dormant)"),
-        supabase.from("deals").select("value").not("stage", "in", "(won,lost,dormant)"),
+        supabase.from("deals").select("value, stage").not("stage", "in", "(won,lost,dormant)"),
+
+        supabase.from("quotations").select("id, total_price, final_price, status, created_at"),
         supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "sent"),
-        supabase.from("tasks").select("id", { count: "exact", head: true }).lt("due_date", now.toISOString()).neq("status", "completed"),
-        Promise.resolve({ count: 0 } as { count: number | null }),
+        supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "approved"),
+        supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "rejected"),
+        supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "waiting_pricing"),
+        supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "expired"),
+        supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "follow_up"),
+
+        supabase.from("orders").select("id", { count: "exact", head: true }),
+        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", [...IN_PRODUCTION_ORDER_STATUSES]),
+        supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "delivered"),
+        supabase.from("orders").select("id", { count: "exact", head: true }).lt("delivery_date", nowISO).not("status", "in", "(delivered,cancelled)"),
+        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", [...OPEN_ORDER_STATUSES]),
+
+        supabase.from("complaints").select("id", { count: "exact", head: true }).in("status", ["open", "investigating", "escalated"]),
+        supabase.from("complaints").select("id", { count: "exact", head: true }).eq("severity", "critical").not("status", "in", "(resolved,closed)"),
+
+        supabase.from("payments").select("id", { count: "exact", head: true }).eq("status", "overdue"),
+        supabase.from("payments").select("total_amount, paid_amount, status").in("status", ["unpaid", "partial", "overdue"]),
+
+        supabase.from("tasks").select("id", { count: "exact", head: true }).lt("due_date", nowISO).neq("status", "completed"),
+
+        // Re-order candidates: clients with last order > 60 days ago
+        supabase.from("clients").select("id", { count: "exact", head: true }).lt("last_order_date", new Date(now.getTime() - 60 * 86400_000).toISOString()),
       ]);
 
-      const pipelineTotal = (pipelineValue.data ?? []).reduce((s, d) => s + Number(d.value || 0), 0);
-      const wonTotal = (dealsWon.data ?? []).reduce((s, d) => s + Number(d.value || 0), 0);
-      const wonCount = dealsWon.data?.length ?? 0;
-      const lostCount = dealsLost.count ?? 0;
-      const totalClosed = wonCount + lostCount;
-      const conversion = totalClosed > 0 ? Math.round((wonCount / totalClosed) * 100) : 0;
+      const wonRows = dealsWonRows.data ?? [];
+      const openRows = dealsOpenRows.data ?? [];
+      const wonTotal = wonRows.reduce((s, d) => s + Number(d.value || 0), 0);
+      const pipelineTotal = openRows.reduce((s, d) => s + Number(d.value || 0), 0);
+      const weightedPipeline = openRows.reduce(
+        (s, d) => s + Number(d.value || 0) * (DEAL_STAGE_PROBABILITY[d.stage] ?? 0),
+        0,
+      );
+      const wonCount = wonRows.length;
+      const lostCount = dealsLostCount.count ?? 0;
+      const conversion = wonCount + lostCount > 0 ? Math.round((wonCount / (wonCount + lostCount)) * 100) : 0;
+
+      const quotations = quotationsAll.data ?? [];
+      const quotationValues = quotations
+        .map((q) => Number(q.final_price || q.total_price || 0))
+        .filter((n) => n > 0);
+      const avgQuotationValue = quotationValues.length
+        ? quotationValues.reduce((a, b) => a + b, 0) / quotationValues.length
+        : 0;
+      const quotationApprovedCount = quotationsApproved.count ?? 0;
+      const quotationTotalCount = quotations.length;
+      const quotationConversion = quotationTotalCount > 0
+        ? Math.round((quotationApprovedCount / quotationTotalCount) * 100)
+        : 0;
+
+      const outstandingReceivable = (paymentsUnpaid.data ?? []).reduce(
+        (s, p) => s + Math.max(0, Number(p.total_amount || 0) - Number(p.paid_amount || 0)),
+        0,
+      );
 
       return {
         leadsToday: leadsToday.count ?? 0,
         leadsWeek: leadsWeek.count ?? 0,
         leadsMonth: leadsMonth.count ?? 0,
-        wonCount,
-        wonTotal,
-        lostCount,
-        openDeals: dealsOpen.data?.length ?? 0,
-        pipelineTotal,
+        leadsRange: leadsRange.count ?? 0,
+        leadsNoFollowup: leadsNoFollowup.count ?? 0,
+        leadsUnassigned: leadsUnassigned.count ?? 0,
+
+        wonCount, wonTotal, lostCount,
+        openDeals: openRows.length,
+        pipelineTotal, weightedPipeline, conversion,
+
+        quotationTotal: quotationTotalCount,
         quotationsSent: quotationsSent.count ?? 0,
-        tasksOverdue: tasksOverdue.count ?? 0,
+        quotationsApproved: quotationApprovedCount,
+        quotationsRejected: quotationsRejected.count ?? 0,
+        quotationsWaiting: quotationsWaiting.count ?? 0,
+        quotationsExpired: quotationsExpired.count ?? 0,
+        quotationsFollowUp: quotationsFollowUp.count ?? 0,
+        avgQuotationValue, quotationConversion,
+
+        ordersTotal: ordersAll.count ?? 0,
+        ordersInProduction: ordersInProduction.count ?? 0,
+        ordersDelivered: ordersDelivered.count ?? 0,
+        ordersDelayed: ordersDelayed.count ?? 0,
+        ordersOpen: ordersOpen.count ?? 0,
+
         complaintsOpen: complaintsOpen.count ?? 0,
-        conversion,
+        complaintsCritical: complaintsCritical.count ?? 0,
+
+        paymentsOverdue: paymentsOverdue.count ?? 0,
+        outstandingReceivable,
+
+        tasksOverdue: tasksOverdue.count ?? 0,
+        reorderCandidates: reorderCandidates.count ?? 0,
       };
     },
   });
 
   const { data: bySource } = useQuery({
-    queryKey: ["leads-by-source"],
+    queryKey: ["leads-by-source", range],
     queryFn: async () => {
-      const { data } = await supabase.from("leads").select("source");
+      const q = supabase.from("leads").select("source");
+      if (rangeStartISO) q.gte("created_at", rangeStartISO);
+      const { data } = await q;
       const map = new Map<string, number>();
-      (data ?? []).forEach((r) => map.set(r.source, (map.get(r.source) ?? 0) + 1));
+      (data ?? []).forEach((r) => r.source && map.set(r.source, (map.get(r.source) ?? 0) + 1));
       return Array.from(map.entries()).map(([source, count]) => ({
-        source: labelOf(LEAD_SOURCES, source),
-        count,
+        source: labelOf(LEAD_SOURCES, source), count,
       }));
     },
   });
 
   const { data: byService } = useQuery({
-    queryKey: ["leads-by-service"],
+    queryKey: ["leads-by-service", range],
     queryFn: async () => {
-      const { data } = await supabase.from("leads").select("service");
+      const q = supabase.from("leads").select("service");
+      if (rangeStartISO) q.gte("created_at", rangeStartISO);
+      const { data } = await q;
       const map = new Map<string, number>();
       (data ?? []).forEach((r) => r.service && map.set(r.service, (map.get(r.service) ?? 0) + 1));
       return Array.from(map.entries()).map(([service, count]) => ({
-        name: labelOf(SERVICES, service),
-        value: count,
+        name: labelOf(SERVICES, service), value: count,
       }));
+    },
+  });
+
+  const { data: recentActivities } = useQuery({
+    queryKey: ["dashboard-activities"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("activities")
+        .select("id, activity_type, subject, created_at")
+        .order("created_at", { ascending: false })
+        .limit(8);
+      return data ?? [];
     },
   });
 
@@ -116,33 +221,84 @@ function DashboardPage() {
     <div className="space-y-6">
       <PageHeader
         title="لوحة التحكم التنفيذية"
-        description="نظرة عامة على أداء المبيعات، العملاء المحتملين، والحملات في الوقت الفعلي."
+        description="مؤشرات مباشرة من قاعدة البيانات — كل رقم مربوط بسجلات حقيقية."
+        actions={
+          <Select value={range} onValueChange={(v) => setRange(v as RangeKey)}>
+            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {RANGE_OPTIONS.map((o) => <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>)}
+            </SelectContent>
+          </Select>
+        }
       />
 
-      {/* Top KPI row */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <StatCard label="عملاء محتملون اليوم" value={formatNumber(stats?.leadsToday ?? 0)} icon={Users} tone="primary" hint="جميع القنوات" />
-        <StatCard label="هذا الأسبوع" value={formatNumber(stats?.leadsWeek ?? 0)} icon={TrendingUp} tone="info" hint="آخر 7 أيام" />
-        <StatCard label="هذا الشهر" value={formatNumber(stats?.leadsMonth ?? 0)} icon={Building2} tone="info" />
-        <StatCard label="معدل التحويل" value={`${stats?.conversion ?? 0}%`} icon={Target} tone="success" hint="مربوح / مغلق" />
+      {/* Leads */}
+      <section>
+        <h2 className="text-sm font-bold text-muted-foreground mb-3">العملاء المحتملون</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <StatCard label="اليوم" value={formatNumber(stats?.leadsToday ?? 0)} icon={Users} tone="primary" />
+          <StatCard label="هذا الأسبوع" value={formatNumber(stats?.leadsWeek ?? 0)} icon={TrendingUp} tone="info" />
+          <StatCard label="هذا الشهر" value={formatNumber(stats?.leadsMonth ?? 0)} icon={Building2} tone="info" />
+          <StatCard label="ضمن الفترة" value={formatNumber(stats?.leadsRange ?? 0)} icon={Users} tone="default" />
+          <StatCard label="بدون متابعة" value={formatNumber(stats?.leadsNoFollowup ?? 0)} icon={Clock} tone={stats?.leadsNoFollowup ? "warning" : "default"} />
+          <StatCard label="بدون مسؤول" value={formatNumber(stats?.leadsUnassigned ?? 0)} icon={AlertCircle} tone={stats?.leadsUnassigned ? "warning" : "default"} />
+        </div>
+      </section>
 
-        <StatCard label="صفقات مفتوحة" value={formatNumber(stats?.openDeals ?? 0)} icon={KanbanSquare} tone="primary" />
-        <StatCard label="قيمة خط الأنابيب" value={formatEGP(stats?.pipelineTotal ?? 0)} icon={Flame} tone="warning" />
-        <StatCard label="صفقات مربوحة" value={formatEGP(stats?.wonTotal ?? 0)} icon={CheckCircle2} tone="success" hint={`${stats?.wonCount ?? 0} صفقة`} />
-        <StatCard label="عروض مرسلة" value={formatNumber(stats?.quotationsSent ?? 0)} icon={FileText} tone="info" />
+      {/* Sales / Deals */}
+      <section>
+        <h2 className="text-sm font-bold text-muted-foreground mb-3">المبيعات والصفقات</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <StatCard label="صفقات مفتوحة" value={formatNumber(stats?.openDeals ?? 0)} icon={KanbanSquare} tone="primary" />
+          <StatCard label="قيمة خط الأنابيب" value={formatEGP(stats?.pipelineTotal ?? 0)} icon={Flame} tone="warning" />
+          <StatCard label="التوقع المرجح" value={formatEGP(stats?.weightedPipeline ?? 0)} icon={Calculator} tone="info" hint="القيمة × الاحتمالية" />
+          <StatCard label="صفقات مربوحة" value={formatEGP(stats?.wonTotal ?? 0)} icon={CheckCircle2} tone="success" hint={`${stats?.wonCount ?? 0} صفقة`} />
+          <StatCard label="صفقات خاسرة" value={formatNumber(stats?.lostCount ?? 0)} icon={AlertCircle} tone="default" />
+          <StatCard label="معدل التحويل" value={`${stats?.conversion ?? 0}%`} icon={Target} tone="success" hint="مربوح / (مربوح + خاسر)" />
+        </div>
+      </section>
 
-        <StatCard label="طلبات تحت الإنتاج" value={formatNumber(0)} icon={Package} tone="default" hint="المرحلة الثانية" />
-        <StatCard label="متابعات متأخرة" value={formatNumber(stats?.tasksOverdue ?? 0)} icon={Clock} tone="warning" />
-        <StatCard label="شكاوى مفتوحة" value={formatNumber(stats?.complaintsOpen ?? 0)} icon={MessageSquareWarning} tone="default" hint="المرحلة الثانية" />
-        <StatCard label="صفقات خاسرة" value={formatNumber(stats?.lostCount ?? 0)} icon={AlertCircle} tone="default" />
-      </div>
+      {/* Quotations */}
+      <section>
+        <h2 className="text-sm font-bold text-muted-foreground mb-3">عروض الأسعار</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <StatCard label="بانتظار التسعير" value={formatNumber(stats?.quotationsWaiting ?? 0)} icon={Clock} tone={stats?.quotationsWaiting ? "warning" : "default"} />
+          <StatCard label="مرسلة" value={formatNumber(stats?.quotationsSent ?? 0)} icon={FileText} tone="info" />
+          <StatCard label="معتمدة" value={formatNumber(stats?.quotationsApproved ?? 0)} icon={CheckCircle2} tone="success" />
+          <StatCard label="مرفوضة / منتهية" value={formatNumber((stats?.quotationsRejected ?? 0) + (stats?.quotationsExpired ?? 0))} icon={AlertCircle} tone="default" />
+          <StatCard label="متوسط قيمة العرض" value={formatEGP(stats?.avgQuotationValue ?? 0)} icon={Calculator} tone="default" />
+          <StatCard label="معدل الاعتماد" value={`${stats?.quotationConversion ?? 0}%`} icon={Target} tone="success" hint="معتمد / إجمالي" />
+        </div>
+      </section>
+
+      {/* Operations */}
+      <section>
+        <h2 className="text-sm font-bold text-muted-foreground mb-3">التشغيل والإنتاج</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <StatCard label="طلبات مفتوحة" value={formatNumber(stats?.ordersOpen ?? 0)} icon={Package} tone="primary" />
+          <StatCard label="تحت الإنتاج" value={formatNumber(stats?.ordersInProduction ?? 0)} icon={Package} tone="info" />
+          <StatCard label="تم التسليم" value={formatNumber(stats?.ordersDelivered ?? 0)} icon={Truck} tone="success" />
+          <StatCard label="متأخرة عن الموعد" value={formatNumber(stats?.ordersDelayed ?? 0)} icon={AlertCircle} tone={stats?.ordersDelayed ? "warning" : "default"} />
+          <StatCard label="شكاوى مفتوحة" value={formatNumber(stats?.complaintsOpen ?? 0)} icon={MessageSquareWarning} tone={stats?.complaintsOpen ? "warning" : "default"} hint={`${stats?.complaintsCritical ?? 0} حرجة`} />
+          <StatCard label="متابعات متأخرة" value={formatNumber(stats?.tasksOverdue ?? 0)} icon={Clock} tone={stats?.tasksOverdue ? "warning" : "default"} />
+        </div>
+      </section>
+
+      {/* Finance & Retention */}
+      <section>
+        <h2 className="text-sm font-bold text-muted-foreground mb-3">المالية والعملاء</h2>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <StatCard label="مستحقات غير محصلة" value={formatEGP(stats?.outstandingReceivable ?? 0)} icon={Wallet} tone={stats?.outstandingReceivable ? "warning" : "default"} />
+          <StatCard label="دفعات متأخرة" value={formatNumber(stats?.paymentsOverdue ?? 0)} icon={AlertCircle} tone={stats?.paymentsOverdue ? "warning" : "default"} />
+          <StatCard label="مرشحون لإعادة الطلب" value={formatNumber(stats?.reorderCandidates ?? 0)} icon={RotateCcw} tone="info" hint="آخر طلب > 60 يوم" />
+          <StatCard label="إجمالي الطلبات" value={formatNumber(stats?.ordersTotal ?? 0)} icon={Package} tone="default" />
+        </div>
+      </section>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="text-base">العملاء المحتملون حسب المصدر</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-base">العملاء المحتملون حسب المصدر</CardTitle></CardHeader>
           <CardContent>
             {bySource && bySource.length > 0 ? (
               <div className="h-64">
@@ -156,45 +312,49 @@ function DashboardPage() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-            ) : (
-              <EmptyChart label="لا توجد بيانات بعد — أضف عملاء محتملين لعرض التحليلات" />
-            )}
+            ) : <EmptyChart label="لا توجد بيانات ضمن الفترة المحددة" />}
           </CardContent>
         </Card>
 
         <Card className="shadow-card">
-          <CardHeader>
-            <CardTitle className="text-base">توزيع الخدمات المطلوبة</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle className="text-base">توزيع الخدمات المطلوبة</CardTitle></CardHeader>
           <CardContent>
             {byService && byService.length > 0 ? (
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
                     <Pie data={byService} dataKey="value" nameKey="name" outerRadius={85} label={(entry) => entry.name}>
-                      {byService.map((_, i) => (
-                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                      ))}
+                      {byService.map((_, i) => <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />)}
                     </Pie>
                     <Legend wrapperStyle={{ fontSize: 12 }} />
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-            ) : (
-              <EmptyChart label="لا توجد بيانات خدمات بعد" />
-            )}
+            ) : <EmptyChart label="لا توجد بيانات خدمات ضمن الفترة" />}
           </CardContent>
         </Card>
       </div>
 
       <Card className="shadow-card">
-        <CardHeader className="flex-row items-center justify-between">
-          <CardTitle className="text-base">آخر النشاطات</CardTitle>
-          <Badge variant="outline" className="text-[10px]">قيد التوسع</Badge>
-        </CardHeader>
-        <CardContent className="text-sm text-muted-foreground py-8 text-center">
-          سيتم عرض الأنشطة الأخيرة هنا (مكالمات، اجتماعات، رسائل واتساب، وتحديثات الصفقات).
+        <CardHeader><CardTitle className="text-base">آخر النشاطات</CardTitle></CardHeader>
+        <CardContent className="text-sm">
+          {isLoading ? (
+            <div className="py-8 text-center text-muted-foreground">جارٍ التحميل...</div>
+          ) : (recentActivities ?? []).length === 0 ? (
+            <div className="py-8 text-center text-muted-foreground">لا توجد نشاطات مسجلة بعد.</div>
+          ) : (
+            <ul className="divide-y divide-border">
+              {(recentActivities ?? []).map((a) => (
+                <li key={a.id} className="py-2 flex justify-between gap-3">
+                  <span className="truncate">{a.subject ?? a.activity_type}</span>
+                  <span className="text-xs text-muted-foreground shrink-0">
+                    {new Intl.DateTimeFormat("ar-EG", { dateStyle: "short", timeStyle: "short" }).format(new Date(a.created_at))}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </CardContent>
       </Card>
     </div>

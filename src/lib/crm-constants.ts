@@ -339,3 +339,38 @@ export const KNOWLEDGE_CATEGORIES = [
   { value: "policies", label: "السياسات" },
 ] as const;
 
+
+// Probability weights per deal stage — used for weighted pipeline / forecast.
+export const DEAL_STAGE_PROBABILITY: Record<string, number> = {
+  new_lead: 0.05,
+  contacted: 0.1,
+  qualified: 0.2,
+  need_analysis: 0.3,
+  sample_review: 0.4,
+  quotation_requested: 0.45,
+  quotation_sent: 0.55,
+  follow_up: 0.6,
+  negotiation: 0.75,
+  won: 1,
+  lost: 0,
+  dormant: 0,
+  reorder: 0.7,
+};
+
+// Order statuses that indicate the order is actively inside the production pipeline.
+export const IN_PRODUCTION_ORDER_STATUSES = [
+  "in_production",
+  "quality_check",
+  "packaging",
+] as const;
+
+// Order statuses that are still open (not delivered / cancelled).
+export const OPEN_ORDER_STATUSES = [
+  "new",
+  "in_production",
+  "quality_check",
+  "packaging",
+  "ready",
+  "shipped",
+  "on_hold",
+] as const;

@@ -289,8 +289,8 @@ function DeliveriesReport({ startISO }: { startISO: string | null }) {
       const rows = data ?? [];
       const byStatus = Array.from(groupBy(rows, (r) => r.status)).map(([k, count]) => ({ name: k, count }));
       const byMethod = Array.from(groupBy(rows, (r) => r.method)).map(([k, count]) => ({ name: k, count }));
-      const delivered = rows.filter((r) => r.actual_delivery_date);
-      const onTime = delivered.filter((r) => r.scheduled_at && new Date(r.actual_delivery_date!).getTime() <= new Date(r.scheduled_at).getTime()).length;
+      const delivered = rows.filter((r) => r.delivered_at);
+      const onTime = delivered.filter((r) => r.scheduled_at && new Date(r.delivered_at!).getTime() <= new Date(r.scheduled_at).getTime()).length;
       const otd = delivered.length ? Math.round((onTime / delivered.length) * 100) : 0;
       return { total: rows.length, delivered: delivered.length, otd, byStatus, byMethod };
     },

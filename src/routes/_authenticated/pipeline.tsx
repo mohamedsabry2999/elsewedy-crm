@@ -176,6 +176,18 @@ function PipelinePage() {
                             متابعة: {formatDate(d.next_followup_date)}
                           </div>
                         )}
+                        <div className="flex gap-1 mt-2 pt-2 border-t border-border">
+                          <Button size="sm" variant="ghost" className="h-6 flex-1 px-1 text-[10px] gap-1"
+                            onClick={(e) => { e.stopPropagation(); createPR.mutate(d as unknown as Record<string, unknown>); }}
+                            disabled={createPR.isPending}>
+                            <Calculator className="h-3 w-3" /> تسعير
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-6 flex-1 px-1 text-[10px] gap-1"
+                            onClick={(e) => { e.stopPropagation(); createQuoteFromDeal.mutate(d as unknown as Record<string, unknown>); }}
+                            disabled={createQuoteFromDeal.isPending}>
+                            <FileText className="h-3 w-3" /> عرض سعر
+                          </Button>
+                        </div>
                       </div>
                     );
                   })}

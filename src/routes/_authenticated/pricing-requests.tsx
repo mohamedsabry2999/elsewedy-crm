@@ -48,7 +48,7 @@ function PricingRequestsPage() {
     },
   });
 
-  const stats = (rows ?? []).reduce(
+  const stats = (rows ?? []).reduce<{ total: number; pending: number; completed: number; urgent: number }>(
     (a, r) => {
       const s = String(r.status);
       if (s === "submitted" || s === "in_review") a.pending++;

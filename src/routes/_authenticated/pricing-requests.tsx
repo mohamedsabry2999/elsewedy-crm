@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, Calculator, Clock, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Plus, Calculator, Clock, CheckCircle2, AlertTriangle, DollarSign, FileText } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
+import { logActivity, notifyRole } from "@/lib/journey";
 import { supabase } from "@/integrations/supabase/client";
 import { db, type AnyRow } from "@/lib/db-any";
 import { PageHeader } from "@/components/crm/PageHeader";
@@ -27,8 +29,11 @@ export const Route = createFileRoute("/_authenticated/pricing-requests")({
 
 function PricingRequestsPage() {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [priceRow, setPriceRow] = useState<AnyRow | null>(null);
   const [status, setStatus] = useState("all");
+  const convertToQuote = useConvertMutations(qc, navigate);
 
   const { data: rows, isLoading } = useQuery<AnyRow[]>({
     queryKey: ["pricing_requests", status],
@@ -90,11 +95,12 @@ function PricingRequestsPage() {
             <TableHead className="text-right">السعر</TableHead>
             <TableHead className="text-right">الحالة</TableHead>
             <TableHead className="text-right">أُنشئ</TableHead>
+            <TableHead className="text-right">إجراء</TableHead>
           </TableRow></TableHeader>
           <TableBody>
-            {isLoading && <TableRow><TableCell colSpan={9} className="text-center py-8 text-muted-foreground">جارٍ التحميل...</TableCell></TableRow>}
+            {isLoading && <TableRow><TableCell colSpan={10} className="text-center py-8 text-muted-foreground">جارٍ التحميل...</TableCell></TableRow>}
             {!isLoading && (rows ?? []).length === 0 && (
-              <TableRow><TableCell colSpan={9} className="text-center py-16 text-muted-foreground">
+              <TableRow><TableCell colSpan={10} className="text-center py-16 text-muted-foreground">
                 <Calculator className="h-10 w-10 mx-auto mb-3 opacity-50" /> لا توجد طلبات تسعير.
               </TableCell></TableRow>
             )}
@@ -109,12 +115,121 @@ function PricingRequestsPage() {
                 <TableCell>{r.final_price ? formatEGP(r.final_price) : "—"}</TableCell>
                 <TableCell><Badge variant="secondary">{labelOf(PRICING_REQUEST_STATUSES, r.status)}</Badge></TableCell>
                 <TableCell className="text-xs text-muted-foreground">{formatDate(r.created_at)}</TableCell>
+                <TableCell>
+                  <div className="flex gap-1">
+                    {(r.status === "submitted" || r.status === "in_review") && (
+                      <Button size="icon" variant="ghost" className="h-8 w-8" title="تسعير" onClick={() => setPriceRow(r)}>
+                        <DollarSign className="h-4 w-4" />
+                      </Button>
+                    )}
+                    {(r.status === "priced" || r.status === "approved") && (
+                      <Button size="icon" variant="ghost" className="h-8 w-8 text-primary" title="تحويل إلى عرض سعر"
+                        onClick={() => convertToQuote.mutate(r)} disabled={convertToQuote.isPending}>
+                        <FileText className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </Card>
+
+      {priceRow && (
+        <SetPriceDialog row={priceRow} onClose={() => setPriceRow(null)}
+          onSaved={() => { qc.invalidateQueries({ queryKey: ["pricing_requests"] }); setPriceRow(null); }} />
+      )}
     </div>
+  );
+}
+
+function useConvertMutations(qc: ReturnType<typeof useQueryClient>, navigate: ReturnType<typeof useNavigate>) {
+  return useMutation({
+    mutationFn: async (r: AnyRow) => {
+      const { data: u } = await supabase.auth.getUser();
+      const quote_number = `Q-${Date.now().toString().slice(-6)}`;
+      const { data, error } = await supabase.from("quotations").insert({
+        quote_number,
+        client_id: r.client_id ?? null,
+        deal_id: r.deal_id ?? null,
+        service_type: r.service_type ?? "digital",
+        printing_type: r.printing_type ?? "digital",
+        size: r.size ?? null,
+        quantity: r.quantity ?? null,
+        material: r.material ?? null,
+        colors: r.colors ?? null,
+        finishing: r.finishing ?? null,
+        status: "draft" as const,
+        total_price: Number(r.final_price ?? 0),
+        owner_id: r.sales_owner ?? u.user?.id,
+        created_by: u.user?.id,
+      } as never).select("id").single();
+      if (error) throw error;
+      await db.from("pricing_requests").update({ status: "converted", quotation_id: data.id }).eq("id", r.id);
+      await logActivity("quote_created", `تحويل طلب تسعير ${r.request_number} إلى عرض سعر`, {
+        client_id: r.client_id, deal_id: r.deal_id,
+      });
+      return data.id as string;
+    },
+    onSuccess: (id) => {
+      toast.success("تم إنشاء عرض سعر");
+      qc.invalidateQueries({ queryKey: ["pricing_requests"] });
+      qc.invalidateQueries({ queryKey: ["quotations"] });
+      navigate({ to: "/quotations/$id", params: { id } });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
+function SetPriceDialog({ row, onClose, onSaved }: { row: AnyRow; onClose: () => void; onSaved: () => void }) {
+  const [price, setPrice] = useState(String(row.final_price ?? ""));
+  const [notes, setNotes] = useState(String(row.pricing_notes ?? ""));
+  const save = useMutation({
+    mutationFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      const { error } = await db.from("pricing_requests").update({
+        final_price: Number(price || 0),
+        pricing_notes: notes || null,
+        status: "priced",
+        priced_by: u.user?.id,
+        priced_at: new Date().toISOString(),
+      }).eq("id", row.id);
+      if (error) throw error;
+      await logActivity("pricing_completed", `تم تسعير الطلب ${row.request_number} بمبلغ ${price}`, {
+        client_id: row.client_id, deal_id: row.deal_id,
+      });
+      if (row.sales_owner) {
+        await db.from("notifications").insert({
+          user_id: row.sales_owner,
+          kind: "pricing_completed",
+          title: "تم تسعير طلبك",
+          body: `${row.request_number} — ${price} ج.م`,
+          link: "/pricing-requests",
+        });
+      }
+    },
+    onSuccess: () => { toast.success("تم حفظ السعر"); onSaved(); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+  return (
+    <Dialog open onOpenChange={onClose}>
+      <DialogContent dir="rtl">
+        <DialogHeader><DialogTitle>تسعير الطلب {row.request_number}</DialogTitle></DialogHeader>
+        <div className="space-y-3 py-2">
+          <div className="space-y-1.5"><Label className="text-xs">السعر النهائي (ج.م) *</Label>
+            <Input type="number" dir="ltr" value={price} onChange={(e) => setPrice(e.target.value)} />
+          </div>
+          <div className="space-y-1.5"><Label className="text-xs">ملاحظات التسعير</Label>
+            <Textarea rows={3} value={notes} onChange={(e) => setNotes(e.target.value)} />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>إلغاء</Button>
+          <Button onClick={() => save.mutate()} disabled={!price || save.isPending}>حفظ وإخطار المبيعات</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 

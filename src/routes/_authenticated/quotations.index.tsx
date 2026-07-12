@@ -21,7 +21,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { QUOTATION_STATUSES, SERVICES, formatEGP, formatDate, labelOf } from "@/lib/crm-constants";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/quotations")({
+export const Route = createFileRoute("/_authenticated/quotations/")({
   component: QuotationsPage,
 });
 

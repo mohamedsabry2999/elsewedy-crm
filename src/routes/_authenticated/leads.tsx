@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Plus, Search, Phone, Mail, MessageSquare, Trash2 } from "lucide-react";
+import { Plus, Search, Phone, Mail, MessageSquare, Trash2, ArrowLeftRight, ListChecks } from "lucide-react";
+import { logActivity, notifyRole } from "@/lib/journey";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/crm/PageHeader";
 import { Button } from "@/components/ui/button";
@@ -71,6 +72,83 @@ function LeadsPage() {
       toast.success("تم حذف العميل المحتمل");
       qc.invalidateQueries({ queryKey: ["leads"] });
     },
+  });
+
+  const convert = useMutation({
+    mutationFn: async (lead: Record<string, unknown>) => {
+      const { data: userRes } = await supabase.auth.getUser();
+      const uid = userRes.user?.id ?? null;
+      let clientId = (lead.client_id as string | null) ?? null;
+      if (!clientId) {
+        const { data: created, error: cErr } = await supabase.from("clients").insert({
+          company_name: lead.company_name as string,
+          contact_person: (lead.contact_person as string) ?? null,
+          phone: (lead.phone as string) ?? null,
+          whatsapp: (lead.whatsapp as string) ?? null,
+          email: (lead.email as string) ?? null,
+          city: (lead.city as string) ?? null,
+          sector: (lead.sector as string) ?? null,
+          client_type: "new" as const,
+          assigned_to: (lead.assigned_to as string) ?? uid,
+          created_by: uid,
+        } as never).select("id").single();
+        if (cErr) throw cErr;
+        clientId = created!.id as string;
+      }
+      const { data: deal, error: dErr } = await supabase.from("deals").insert({
+        title: `صفقة — ${lead.company_name}`,
+        client_id: clientId,
+        lead_id: lead.id as string,
+        service: (lead.service as string) ?? null,
+        value: 0,
+        stage: "qualified" as const,
+        temperature: ((lead.temperature as string) ?? "warm") as "warm",
+        owner_id: (lead.assigned_to as string) ?? uid,
+        created_by: uid,
+      } as never).select("id").single();
+      if (dErr) throw dErr;
+      const { error: uErr } = await supabase.from("leads").update({
+        status: "converted" as const,
+        client_id: clientId,
+      } as never).eq("id", lead.id as string);
+      if (uErr) throw uErr;
+      await logActivity("lead_converted", `تحويل العميل المحتمل ${lead.company_name} إلى صفقة`, {
+        lead_id: lead.id as string, client_id: clientId, deal_id: deal!.id as string,
+      });
+      await notifyRole("sales_manager", "lead_converted", "تحويل عميل محتمل",
+        `تم تحويل ${lead.company_name} إلى صفقة`, `/pipeline`,
+        { type: "deal", id: deal!.id as string });
+    },
+    onSuccess: () => {
+      toast.success("تم التحويل إلى صفقة");
+      qc.invalidateQueries({ queryKey: ["leads"] });
+      qc.invalidateQueries({ queryKey: ["deals"] });
+      qc.invalidateQueries({ queryKey: ["clients"] });
+    },
+    onError: (e: Error) => toast.error("فشل التحويل", { description: e.message }),
+  });
+
+  const addTask = useMutation({
+    mutationFn: async (lead: Record<string, unknown>) => {
+      const { data: userRes } = await supabase.auth.getUser();
+      const uid = userRes.user?.id ?? null;
+      const due = new Date(); due.setDate(due.getDate() + 1);
+      const { error } = await supabase.from("tasks").insert({
+        title: `متابعة ${lead.company_name}`,
+        task_type: "call",
+        priority: "medium" as const,
+        status: "pending" as const,
+        due_date: due.toISOString(),
+        lead_id: lead.id as string,
+        client_id: (lead.client_id as string) ?? null,
+        assigned_to: (lead.assigned_to as string) ?? uid,
+        created_by: uid,
+      } as never);
+      if (error) throw error;
+      await logActivity("task_created", `مهمة متابعة لـ ${lead.company_name}`, { lead_id: lead.id as string });
+    },
+    onSuccess: () => { toast.success("تم إنشاء مهمة متابعة (غداً)"); qc.invalidateQueries({ queryKey: ["tasks"] }); },
+    onError: (e: Error) => toast.error(e.message),
   });
 
   const filtered = (leads ?? []).filter((l) => {
@@ -168,6 +246,18 @@ function LeadsPage() {
                   <TableCell className="text-xs text-muted-foreground">{formatDate(l.next_followup_date)}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
+                      {l.status !== "converted" && (
+                        <Button size="icon" variant="ghost" className="h-8 w-8 text-success" title="تحويل إلى صفقة"
+                          onClick={() => convert.mutate(l as unknown as Record<string, unknown>)}
+                          disabled={convert.isPending}>
+                          <ArrowLeftRight className="h-4 w-4" />
+                        </Button>
+                      )}
+                      <Button size="icon" variant="ghost" className="h-8 w-8" title="إضافة مهمة متابعة"
+                        onClick={() => addTask.mutate(l as unknown as Record<string, unknown>)}
+                        disabled={addTask.isPending}>
+                        <ListChecks className="h-4 w-4" />
+                      </Button>
                       {l.whatsapp && (
                         <a href={`https://wa.me/${l.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
                           <Button size="icon" variant="ghost" className="h-8 w-8 text-success"><MessageSquare className="h-4 w-4" /></Button>

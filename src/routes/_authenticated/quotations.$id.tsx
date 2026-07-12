@@ -1,7 +1,9 @@
 import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowRight, Plus, Trash2, Printer, Save } from "lucide-react";
+import { ArrowRight, Plus, Trash2, Printer, Save, Send, CheckCircle2, Package } from "lucide-react";
+import { logActivity, notifyRole } from "@/lib/journey";
+import { PRODUCTION_STAGE_TEMPLATE } from "@/lib/crm-constants";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "@/components/crm/PageHeader";
 import { Card } from "@/components/ui/card";
@@ -143,6 +145,68 @@ function QuotationDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const transition = useMutation({
+    mutationFn: async (next: "sent" | "approved") => {
+      const { error } = await supabase.from("quotations")
+        .update({ status: next as "sent" } as never).eq("id", id);
+      if (error) throw error;
+      await logActivity(`quote_${next}`,
+        `عرض ${quote?.quote_number} — ${next === "sent" ? "أُرسل للعميل" : "تم اعتماده"}`,
+        { client_id: quote?.client_id, deal_id: quote?.deal_id });
+      if (next === "approved") {
+        await notifyRole("production_planning", "quote_approved",
+          "عرض معتمد جاهز للتحويل",
+          `${quote?.quote_number} — ${quote?.clients?.company_name ?? ""}`,
+          `/quotations/${id}`);
+      }
+    },
+    onSuccess: (_r, next) => {
+      toast.success(next === "sent" ? "تم الإرسال" : "تم الاعتماد");
+      qc.invalidateQueries({ queryKey: ["quotation", id] });
+      qc.invalidateQueries({ queryKey: ["quotations"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const toOrder = useMutation({
+    mutationFn: async () => {
+      const { data: u } = await supabase.auth.getUser();
+      const order_number = `ORD-${Date.now().toString().slice(-6)}`;
+      const { data, error } = await supabase.from("orders").insert({
+        order_number,
+        client_id: quote?.client_id ?? null,
+        quotation_id: id,
+        title: `طلب — ${quote?.quote_number}`,
+        total_amount: Number(quote?.final_price ?? quote?.total_price ?? 0),
+        paid_amount: 0,
+        status: "new" as const,
+        owner_id: quote?.owner_id ?? u.user?.id,
+        created_by: u.user?.id,
+      } as never).select("id").single();
+      if (error) throw error;
+      const stages = PRODUCTION_STAGE_TEMPLATE.map((name, i) => ({
+        order_id: data!.id, stage_name: name, stage_order: i, status: "pending" as const,
+      }));
+      await supabase.from("production_stages").insert(stages as never);
+      await logActivity("order_created",
+        `تحويل عرض ${quote?.quote_number} إلى طلب ${order_number}`,
+        { client_id: quote?.client_id, deal_id: quote?.deal_id });
+      await notifyRole("production_planning", "order_created",
+        "طلب جديد للإنتاج", order_number, `/production`, { type: "order", id: data!.id });
+      if (quote?.deal_id) {
+        await supabase.from("deals").update({ stage: "won" as const }).eq("id", quote.deal_id as string);
+      }
+      return data!.id as string;
+    },
+    onSuccess: () => {
+      toast.success("تم إنشاء الطلب ومراحل الإنتاج");
+      qc.invalidateQueries({ queryKey: ["orders"] });
+      qc.invalidateQueries({ queryKey: ["deals"] });
+      qc.invalidateQueries({ queryKey: ["quotation", id] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   if (isLoading) return <div className="p-8 text-muted-foreground">جارٍ التحميل...</div>;
   if (!quote) return <div className="p-8">العرض غير موجود</div>;
 
@@ -162,6 +226,22 @@ function QuotationDetailPage() {
             <Button onClick={() => save.mutate()} disabled={save.isPending}>
               <Save className="h-4 w-4 ml-1" /> حفظ
             </Button>
+            {quote.status === "draft" && (
+              <Button variant="secondary" onClick={() => transition.mutate("sent")} disabled={transition.isPending}>
+                <Send className="h-4 w-4 ml-1" /> إرسال للعميل
+              </Button>
+            )}
+            {quote.status === "sent" && (
+              <Button className="bg-success text-success-foreground hover:bg-success/90"
+                onClick={() => transition.mutate("approved")} disabled={transition.isPending}>
+                <CheckCircle2 className="h-4 w-4 ml-1" /> اعتماد
+              </Button>
+            )}
+            {quote.status === "approved" && (
+              <Button onClick={() => toOrder.mutate()} disabled={toOrder.isPending}>
+                <Package className="h-4 w-4 ml-1" /> تحويل إلى طلب إنتاج
+              </Button>
+            )}
           </div>
         }
       />

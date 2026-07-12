@@ -39,7 +39,8 @@ export type ModuleKey =
   | "orders" | "production" | "deliveries" | "complaints"
   | "payments" | "campaigns" | "competitors" | "automation"
   | "assistant" | "knowledge" | "reports" | "portal-links"
-  | "import" | "data-quality";
+  | "import" | "data-quality" | "artwork";
+
 
 export type Capability =
   | "view" | "create" | "edit" | "delete"

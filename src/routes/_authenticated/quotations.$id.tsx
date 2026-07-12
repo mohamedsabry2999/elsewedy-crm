@@ -209,6 +209,9 @@ function QuotationDetailPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  if (isLoading) return <div className="p-8 text-muted-foreground">جارٍ التحميل...</div>;
+  if (!quote) return <div className="p-8">العرض غير موجود</div>;
+
   return (
     <div>
       <PageHeader

@@ -89,10 +89,10 @@ function DashboardPage() {
         supabase.from("quotations").select("id", { count: "exact", head: true }).eq("status", "follow_up"),
 
         supabase.from("orders").select("id", { count: "exact", head: true }),
-        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", IN_PRODUCTION_ORDER_STATUSES as unknown as ("in_production"|"quality_check"|"packaging")[]),
+        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", [...IN_PRODUCTION_ORDER_STATUSES]),
         supabase.from("orders").select("id", { count: "exact", head: true }).eq("status", "delivered"),
         supabase.from("orders").select("id", { count: "exact", head: true }).lt("delivery_date", nowISO).not("status", "in", "(delivered,cancelled)"),
-        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", OPEN_ORDER_STATUSES as unknown as ("new"|"in_production"|"quality_check"|"packaging"|"ready"|"shipped"|"on_hold")[]),
+        supabase.from("orders").select("id", { count: "exact", head: true }).in("status", [...OPEN_ORDER_STATUSES]),
 
         supabase.from("complaints").select("id", { count: "exact", head: true }).in("status", ["open", "investigating", "escalated"]),
         supabase.from("complaints").select("id", { count: "exact", head: true }).eq("severity", "critical").not("status", "in", "(resolved,closed)"),

@@ -48,6 +48,68 @@ function PipelinePage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["deals"] }),
   });
 
+  const createPR = useMutation({
+    mutationFn: async (d: Record<string, unknown>) => {
+      const { data: u } = await supabase.auth.getUser();
+      const request_number = `PR-${Date.now().toString().slice(-6)}`;
+      const { data, error } = await db.from("pricing_requests").insert({
+        request_number,
+        client_id: d.client_id ?? null,
+        deal_id: d.id,
+        service_type: d.service ?? "digital",
+        urgency: "normal",
+        status: "submitted",
+        sales_owner: (d.owner_id as string) ?? u.user?.id,
+        created_by: u.user?.id,
+        technical_notes: `من صفقة: ${d.title}`,
+      }).select("id").single();
+      if (error) throw error;
+      await supabase.from("deals").update({ stage: "quotation_requested" as const }).eq("id", d.id as string);
+      await logActivity("pricing_requested", `طلب تسعير للصفقة ${d.title}`, {
+        client_id: (d.client_id as string) ?? null, deal_id: d.id as string,
+      });
+      await notifyRole("pricing_team", "pricing_requested", "طلب تسعير جديد",
+        `الصفقة: ${d.title}`, `/pricing-requests`, { type: "pricing_request", id: data.id });
+    },
+    onSuccess: () => {
+      toast.success("تم إرسال طلب تسعير لفريق التسعير");
+      qc.invalidateQueries({ queryKey: ["deals"] });
+      qc.invalidateQueries({ queryKey: ["pricing_requests"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const createQuoteFromDeal = useMutation({
+    mutationFn: async (d: Record<string, unknown>) => {
+      const { data: u } = await supabase.auth.getUser();
+      const quote_number = `Q-${Date.now().toString().slice(-6)}`;
+      const { data, error } = await supabase.from("quotations").insert({
+        quote_number,
+        client_id: (d.client_id as string) ?? null,
+        deal_id: d.id as string,
+        service_type: (d.service as string) ?? "digital",
+        printing_type: "digital",
+        status: "draft" as const,
+        total_price: Number(d.value ?? 0),
+        owner_id: (d.owner_id as string) ?? u.user?.id,
+        created_by: u.user?.id,
+      } as never).select("id").single();
+      if (error) throw error;
+      await supabase.from("deals").update({ stage: "quotation_sent" as const }).eq("id", d.id as string);
+      await logActivity("quote_created", `عرض سعر للصفقة ${d.title}`, {
+        client_id: (d.client_id as string) ?? null, deal_id: d.id as string,
+      });
+      return data.id as string;
+    },
+    onSuccess: (id) => {
+      toast.success("تم إنشاء عرض سعر — افتحه لإضافة البنود");
+      qc.invalidateQueries({ queryKey: ["quotations"] });
+      qc.invalidateQueries({ queryKey: ["deals"] });
+      window.location.href = `/quotations/${id}`;
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const byStage = (stage: string) => (deals ?? []).filter((d) => d.stage === stage);
 
   return (

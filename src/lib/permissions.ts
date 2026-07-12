@@ -39,7 +39,7 @@ export type ModuleKey =
   | "orders" | "production" | "deliveries" | "complaints"
   | "payments" | "campaigns" | "competitors" | "automation"
   | "assistant" | "knowledge" | "reports" | "portal-links"
-  | "import" | "data-quality" | "artwork";
+  | "import" | "data-quality" | "artwork" | "users" | "profile";
 
 
 export type Capability =
@@ -81,7 +81,8 @@ const MODULE_VIEW: Record<ModuleKey, AppRole[]> = {
   import: ["sales_manager","marketing_manager"],
   "data-quality": ["top_management","sales_manager","marketing_manager","viewer"],
   artwork: ["top_management","sales_manager","sales_person","production","production_planning","quality_control","customer_service","viewer"],
-
+  users: [],
+  profile: ["top_management","sales_manager","sales_person","marketing_manager","pricing_team","production","production_planning","quality_control","finance","accounting","customer_service","viewer"],
 };
 
 // Capability → roles allowed (per module bucket)
@@ -172,6 +173,8 @@ const DEFAULT_CAPS: Record<ModuleKey, CapMap> = {
     delete: ["sales_manager"],
     approve: ["sales_manager","production","quality_control"],
   },
+  users: { view: [] },
+  profile: { view: MODULE_VIEW.profile },
 };
 
 

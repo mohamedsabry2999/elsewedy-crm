@@ -5,6 +5,7 @@ import {
   BarChart3, Megaphone, MessageSquareWarning, Menu, LogOut,
   Package, Factory, Bot, Zap, ExternalLink, Upload, ShieldCheck,
   Calculator, Truck, Wallet, BookOpen, Swords, CalendarDays, Image as ImageIcon,
+  UserCog, User as UserIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -62,6 +63,7 @@ const NAV: NavItem[] = [
 
   { to: "/import", label: "استيراد Excel", icon: Upload, group: "الإدارة" },
   { to: "/data-quality", label: "جودة البيانات", icon: ShieldCheck, group: "الإدارة" },
+  { to: "/users", label: "المستخدمين والصلاحيات", icon: UserCog, group: "الإدارة" },
 ];
 
 
@@ -128,6 +130,10 @@ export function AppShell({ children }: { children: ReactNode }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>الحساب</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <Link to="/profile"><UserIcon className="h-4 w-4 ml-2" /> الملف الشخصي</Link>
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={signOut} className="text-destructive focus:text-destructive">
                 <LogOut className="h-4 w-4 ml-2" /> تسجيل الخروج

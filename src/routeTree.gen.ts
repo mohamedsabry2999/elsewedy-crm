@@ -9,15 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as RequestRouteImport } from './routes/request'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArtworkUploadRouteImport } from './routes/artwork-upload'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as PortalTokenRouteImport } from './routes/portal.$token'
+import { Route as AuthenticatedUsersRouteImport } from './routes/_authenticated/users'
 import { Route as AuthenticatedTasksRouteImport } from './routes/_authenticated/tasks'
 import { Route as AuthenticatedSamplesRouteImport } from './routes/_authenticated/samples'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedProductionRouteImport } from './routes/_authenticated/production'
 import { Route as AuthenticatedPricingRequestsRouteImport } from './routes/_authenticated/pricing-requests'
 import { Route as AuthenticatedPortalLinksRouteImport } from './routes/_authenticated/portal-links'
@@ -43,9 +47,19 @@ import { Route as ApiPublicLeadRequestRouteImport } from './routes/api/public/le
 import { Route as AuthenticatedQuotationsIdRouteImport } from './routes/_authenticated/quotations.$id'
 import { Route as AuthenticatedArtworkPendingRouteImport } from './routes/_authenticated/artwork.pending'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RequestRoute = RequestRouteImport.update({
   id: '/request',
   path: '/request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -72,6 +86,11 @@ const PortalTokenRoute = PortalTokenRouteImport.update({
   path: '/portal/$token',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedUsersRoute = AuthenticatedUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTasksRoute = AuthenticatedTasksRouteImport.update({
   id: '/tasks',
   path: '/tasks',
@@ -85,6 +104,11 @@ const AuthenticatedSamplesRoute = AuthenticatedSamplesRouteImport.update({
 const AuthenticatedReportsRoute = AuthenticatedReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedProductionRoute = AuthenticatedProductionRouteImport.update({
@@ -219,7 +243,9 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
+  '/register': typeof RegisterRoute
   '/request': typeof RequestRoute
+  '/signup': typeof SignupRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
   '/artwork': typeof AuthenticatedArtworkRouteWithChildren
   '/assistant': typeof AuthenticatedAssistantRoute
@@ -240,9 +266,11 @@ export interface FileRoutesByFullPath {
   '/portal-links': typeof AuthenticatedPortalLinksRoute
   '/pricing-requests': typeof AuthenticatedPricingRequestsRoute
   '/production': typeof AuthenticatedProductionRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/samples': typeof AuthenticatedSamplesRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/users': typeof AuthenticatedUsersRoute
   '/portal/$token': typeof PortalTokenRoute
   '/artwork/pending': typeof AuthenticatedArtworkPendingRoute
   '/quotations/$id': typeof AuthenticatedQuotationsIdRoute
@@ -252,7 +280,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
+  '/register': typeof RegisterRoute
   '/request': typeof RequestRoute
+  '/signup': typeof SignupRoute
   '/approvals': typeof AuthenticatedApprovalsRoute
   '/artwork': typeof AuthenticatedArtworkRouteWithChildren
   '/assistant': typeof AuthenticatedAssistantRoute
@@ -273,9 +303,11 @@ export interface FileRoutesByTo {
   '/portal-links': typeof AuthenticatedPortalLinksRoute
   '/pricing-requests': typeof AuthenticatedPricingRequestsRoute
   '/production': typeof AuthenticatedProductionRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/samples': typeof AuthenticatedSamplesRoute
   '/tasks': typeof AuthenticatedTasksRoute
+  '/users': typeof AuthenticatedUsersRoute
   '/portal/$token': typeof PortalTokenRoute
   '/': typeof AuthenticatedIndexRoute
   '/artwork/pending': typeof AuthenticatedArtworkPendingRoute
@@ -288,7 +320,9 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/artwork-upload': typeof ArtworkUploadRoute
   '/auth': typeof AuthRoute
+  '/register': typeof RegisterRoute
   '/request': typeof RequestRoute
+  '/signup': typeof SignupRoute
   '/_authenticated/approvals': typeof AuthenticatedApprovalsRoute
   '/_authenticated/artwork': typeof AuthenticatedArtworkRouteWithChildren
   '/_authenticated/assistant': typeof AuthenticatedAssistantRoute
@@ -309,9 +343,11 @@ export interface FileRoutesById {
   '/_authenticated/portal-links': typeof AuthenticatedPortalLinksRoute
   '/_authenticated/pricing-requests': typeof AuthenticatedPricingRequestsRoute
   '/_authenticated/production': typeof AuthenticatedProductionRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/samples': typeof AuthenticatedSamplesRoute
   '/_authenticated/tasks': typeof AuthenticatedTasksRoute
+  '/_authenticated/users': typeof AuthenticatedUsersRoute
   '/portal/$token': typeof PortalTokenRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/artwork/pending': typeof AuthenticatedArtworkPendingRoute
@@ -325,7 +361,9 @@ export interface FileRouteTypes {
     | '/'
     | '/artwork-upload'
     | '/auth'
+    | '/register'
     | '/request'
+    | '/signup'
     | '/approvals'
     | '/artwork'
     | '/assistant'
@@ -346,9 +384,11 @@ export interface FileRouteTypes {
     | '/portal-links'
     | '/pricing-requests'
     | '/production'
+    | '/profile'
     | '/reports'
     | '/samples'
     | '/tasks'
+    | '/users'
     | '/portal/$token'
     | '/artwork/pending'
     | '/quotations/$id'
@@ -358,7 +398,9 @@ export interface FileRouteTypes {
   to:
     | '/artwork-upload'
     | '/auth'
+    | '/register'
     | '/request'
+    | '/signup'
     | '/approvals'
     | '/artwork'
     | '/assistant'
@@ -379,9 +421,11 @@ export interface FileRouteTypes {
     | '/portal-links'
     | '/pricing-requests'
     | '/production'
+    | '/profile'
     | '/reports'
     | '/samples'
     | '/tasks'
+    | '/users'
     | '/portal/$token'
     | '/'
     | '/artwork/pending'
@@ -393,7 +437,9 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/artwork-upload'
     | '/auth'
+    | '/register'
     | '/request'
+    | '/signup'
     | '/_authenticated/approvals'
     | '/_authenticated/artwork'
     | '/_authenticated/assistant'
@@ -414,9 +460,11 @@ export interface FileRouteTypes {
     | '/_authenticated/portal-links'
     | '/_authenticated/pricing-requests'
     | '/_authenticated/production'
+    | '/_authenticated/profile'
     | '/_authenticated/reports'
     | '/_authenticated/samples'
     | '/_authenticated/tasks'
+    | '/_authenticated/users'
     | '/portal/$token'
     | '/_authenticated/'
     | '/_authenticated/artwork/pending'
@@ -429,18 +477,34 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   ArtworkUploadRoute: typeof ArtworkUploadRoute
   AuthRoute: typeof AuthRoute
+  RegisterRoute: typeof RegisterRoute
   RequestRoute: typeof RequestRoute
+  SignupRoute: typeof SignupRoute
   PortalTokenRoute: typeof PortalTokenRoute
   ApiPublicLeadRequestRoute: typeof ApiPublicLeadRequestRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/request': {
       id: '/request'
       path: '/request'
       fullPath: '/request'
       preLoaderRoute: typeof RequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -478,6 +542,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalTokenRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/users': {
+      id: '/_authenticated/users'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof AuthenticatedUsersRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/tasks': {
       id: '/_authenticated/tasks'
       path: '/tasks'
@@ -497,6 +568,13 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof AuthenticatedReportsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/production': {
@@ -702,9 +780,11 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPortalLinksRoute: typeof AuthenticatedPortalLinksRoute
   AuthenticatedPricingRequestsRoute: typeof AuthenticatedPricingRequestsRoute
   AuthenticatedProductionRoute: typeof AuthenticatedProductionRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedSamplesRoute: typeof AuthenticatedSamplesRoute
   AuthenticatedTasksRoute: typeof AuthenticatedTasksRoute
+  AuthenticatedUsersRoute: typeof AuthenticatedUsersRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedQuotationsIdRoute: typeof AuthenticatedQuotationsIdRoute
   AuthenticatedQuotationsIndexRoute: typeof AuthenticatedQuotationsIndexRoute
@@ -731,9 +811,11 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPortalLinksRoute: AuthenticatedPortalLinksRoute,
   AuthenticatedPricingRequestsRoute: AuthenticatedPricingRequestsRoute,
   AuthenticatedProductionRoute: AuthenticatedProductionRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedSamplesRoute: AuthenticatedSamplesRoute,
   AuthenticatedTasksRoute: AuthenticatedTasksRoute,
+  AuthenticatedUsersRoute: AuthenticatedUsersRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedQuotationsIdRoute: AuthenticatedQuotationsIdRoute,
   AuthenticatedQuotationsIndexRoute: AuthenticatedQuotationsIndexRoute,
@@ -746,7 +828,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   ArtworkUploadRoute: ArtworkUploadRoute,
   AuthRoute: AuthRoute,
+  RegisterRoute: RegisterRoute,
   RequestRoute: RequestRoute,
+  SignupRoute: SignupRoute,
   PortalTokenRoute: PortalTokenRoute,
   ApiPublicLeadRequestRoute: ApiPublicLeadRequestRoute,
 }
